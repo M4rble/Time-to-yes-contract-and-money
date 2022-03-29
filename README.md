@@ -1,2 +1,2 @@
-# Visualization-2-Sledilnik-in-COVID
+# Modeliranje in vizualizacija časa od oddaje vloge do prejema kredita
 Projekt pri predmetu Matematika z računalnikom
