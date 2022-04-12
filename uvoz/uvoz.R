@@ -6,11 +6,11 @@ uvoz <- read_excel("podatki/IZMISLJENI_PODATKI.xlsx")
 
 
 # May -> Maj
-uvoz$MESEC <- gsub("May", "Maj", podatki$MESEC)
+uvoz$MESEC <- gsub("May", "Maj", uvoz$MESEC)
 
 
 # naredimo vrednosti produktov bolj atraktivne - izmislimo si tipe kreditov in 
-#preimenujemo regiji v vzhodno in zahodno
+# preimenujemo regiji v vzhodno in zahodno
 podatki <- uvoz %>% mutate(PRODUKT = case_when(
   uvoz$PRODUKT == 1 ~ "osebni",
   uvoz$PRODUKT == 2 ~ "studentski",
@@ -28,6 +28,8 @@ podatki <- rename(podatki, c("produkt" = "PRODUKT", "mesec" = "MESEC", "tip" = "
                              "znesek" = "ZNESEK_POSLA_V_DONARJIH", "regija" = "REGIJA",
                              "poslovalnica" = "POSLOVALNICA"))
 
-#tidydata končana
+# tidydata končana
 
-unique(podatki$poslovalnica)
+
+
+
