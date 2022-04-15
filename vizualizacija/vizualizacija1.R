@@ -3,16 +3,140 @@
 source("~/Faks/mag 1 letnik/MzR/Time-to-yes-contract-and-money/uvoz/uvoz.R")
 
 # prvo po atributih
-
+library(scales)
+library(cowplot)
+library(ggpubr)
 
 # PRODUKTI
 # delež v celem letu in po mesecih
 del.produktov <- as.data.frame(prop.table(table(podatki$produkt))*100)
 delez.produktov <- rename(del.produktov, c("produkt" = "Var1", "delez" = "Freq"))
 
+graf1 <- ggplot(delez.produktov, aes(x="", y=delez, fill =produkt)) +
+  geom_col(position = position_dodge(width = 0.9)) +
+  geom_label(aes(x="", y = delez + 2, label = delez), 
+            position = position_dodge(width = 0.9))
+print(graf1)
+
+graf1.2 <- ggplot(delez.produktov, aes(x=1, y=delez, fill=produkt)) +
+  geom_col() +
+  geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
+  theme_void() + ggtitle("Delež posameznih produktov (v odstotkih) v celem letu")
+print(graf1.2)
+
+
 mes.del.prod <- subset(podatki, select = c(mesec, produkt))
 mes.delez.produktov <- mes.del.prod %>% group_by(mesec) %>% count(produkt) %>% 
-                        summarise(delez = n/sum(n) * 100, produkt)
+                        summarise(delez = round(n/sum(n) * 100,2), produkt)
+df.jan <- data.frame("Jan",0,"avtomobilski")
+names(df.jan) <- c("mesec", "delez", "produkt")
+mes.delez.produktov <- rbind(mes.delez.produktov, df.jan)
+
+par(mfrow = c(4,3))
+
+graf2.jan <- mes.delez.produktov %>% filter(mesec == "Jan") %>% 
+  ggplot(aes(x=1, y=delez, fill=produkt)) +
+  geom_col() +
+  geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
+  theme_void()
+print(graf2.jan)
+
+graf2.feb <- mes.delez.produktov %>% filter(mesec == "Feb") %>% 
+  ggplot(aes(x=1, y=delez, fill=produkt)) +
+  geom_col() +
+  geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
+  theme_void()
+print(graf2.feb)
+
+graf2.mar <- mes.delez.produktov %>% filter(mesec == "Mar") %>% 
+  ggplot(aes(x=1, y=delez, fill=produkt)) +
+  geom_col() +
+  geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
+  theme_void()
+print(graf2.mar)
+
+graf2.apr <- mes.delez.produktov %>% filter(mesec == "Apr") %>% 
+  ggplot(aes(x=1, y=delez, fill=produkt)) +
+  geom_col() +
+  geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
+  theme_void()
+print(graf2.apr)
+
+graf2.maj <- mes.delez.produktov %>% filter(mesec == "Maj") %>% 
+  ggplot(aes(x=1, y=delez, fill=produkt)) +
+  geom_col() +
+  geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
+  theme_void()
+print(graf2.maj)
+
+graf2.jun <- mes.delez.produktov %>% filter(mesec == "Jun") %>% 
+  ggplot(aes(x=1, y=delez, fill=produkt)) +
+  geom_col() +
+  geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
+  theme_void()
+print(graf2.jun)
+
+graf2.jul <- mes.delez.produktov %>% filter(mesec == "Jul") %>% 
+  ggplot(aes(x=1, y=delez, fill=produkt)) +
+  geom_col() +
+  geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
+  theme_void()
+print(graf2.jul)
+
+graf2.aug <- mes.delez.produktov %>% filter(mesec == "Aug") %>% 
+  ggplot(aes(x=1, y=delez, fill=produkt)) +
+  geom_col() +
+  geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
+  theme_void()
+print(graf2.aug)
+
+graf2.sep <- mes.delez.produktov %>% filter(mesec == "Sep") %>% 
+  ggplot(aes(x=1, y=delez, fill=produkt)) +
+  geom_col() +
+  geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
+  theme_void()
+print(graf2.sep)
+
+graf2.oct <- mes.delez.produktov %>% filter(mesec == "Oct") %>% 
+  ggplot(aes(x=1, y=delez, fill=produkt)) +
+  geom_col() +
+  geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
+  theme_void()
+print(graf2.oct)
+
+graf2.nov <- mes.delez.produktov %>% filter(mesec == "Nov") %>% 
+  ggplot(aes(x=1, y=delez, fill=produkt)) +
+  geom_col() +
+  geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
+  theme_void()
+print(graf2.nov)
+
+graf2.dec <- mes.delez.produktov %>% filter(mesec == "Dec") %>% 
+  ggplot(aes(x=1, y=delez, fill=produkt)) +
+  geom_col() +
+  geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
+  theme_void()
+print(graf2.dec)
+
+plot <- ggarrange(graf2.jan, graf2.feb, graf2.mar, graf2.apr,graf2.maj, graf2.jun, graf2.jul,
+          graf2.aug, graf2.sep, graf2.oct, graf2.nov, graf2.dec, ncol=3, nrow=4, 
+          labels = c("JAN", "FEB", "MAR", "APR", "MAJ", "JUN", "JUL", "AVG", "SEP", "OKT", "NOV", "DEC"),
+           common.legend = TRUE, legend="bottom")
+annotate_figure(plot, top = text_grob("Delež produktov po mesecih", 
+                                      color = "red", face = "bold", size = 14))
 
 # TIPI
 # delež v celem letu in po mesecih
