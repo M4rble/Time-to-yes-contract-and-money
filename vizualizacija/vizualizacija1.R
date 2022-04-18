@@ -397,6 +397,13 @@ graf7.1 <- ggplot(znesek.prod.povp, aes(x = produkt, y=povpr_prod, fill = produk
            ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na produkt") + scale_fill_brewer("Accent")
 print(graf7.1)
 
+graf7.1.2 <- ggplot(znesek, aes(x= produkt, y=znesek, fill = produkt)) + 
+             geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
+             stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+             ggtitle("Graf kvantilov zneskov po produktih") + 
+             theme(legend.position="none") +
+print(graf7.1.2)
+
 znesek.mesec.povp <- znesek %>% group_by(mesec) %>% summarise(povpr_prod = mean(znesek))
 graf7.2 <- ggplot(znesek.mesec.povp, aes(x=mesec, y=povpr_prod, group=1)) + 
   geom_smooth() + geom_point() + ggtitle("Povprečen znesek po mesecih") +
@@ -409,12 +416,24 @@ graf7.2.2 <- graf7.2 + geom_line(aes(y=mean(povpr_prod), colour="Povprečje")) +
                       values = c("Povprečje"="red", "Mediana"="green"))
 print(graf7.2.2)
 
+graf7.2.3 <- ggplot(znesek, aes(x= mesec, y=znesek, fill = mesec)) + 
+             geom_boxplot(outlier.color = "blue") +
+             stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+             ggtitle("Graf kvantilov zneskov po mesecih")
+print(graf7.2.3)
+
 
 znesek.tip.povp <- znesek %>% group_by(tip) %>% summarise(povpr_prod = mean(znesek))
 
 graf7.3 <- ggplot(znesek.tip.povp, aes(x = tip, y=povpr_prod, fill = tip)) + geom_col() + 
   ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na tip")
 print(graf7.3)
+
+graf7.3.2 <- ggplot(znesek, aes(x= tip, y=znesek, fill = tip)) + 
+  geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("Graf kvantilov zneskov po tipih")
+print(graf7.3.2)
 
 
 znesek.regija.povp <- znesek %>% group_by(regija) %>% summarise(povpr_prod = mean(znesek))
@@ -423,8 +442,20 @@ graf7.4 <- ggplot(znesek.regija.povp, aes(x = regija, y=povpr_prod, fill = regij
   ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na regijo")
 print(graf7.4)
 
+graf7.4.2 <- ggplot(znesek, aes(x= regija, y=znesek, fill = regija)) + 
+  geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("Graf kvantilov zneskov po regijah")
+print(graf7.4.2)
+
 
 znesek.posl.povp <- znesek %>% group_by(poslovalnica) %>% summarise(povpr_prod = mean(znesek))
 graf7.5 <- ggplot(znesek.posl.povp, aes(x = poslovalnica, y=povpr_prod, fill = poslovalnica)) + geom_col() + 
   ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na poslovalnico")
 print(graf7.5)
+
+graf7.5.2 <- ggplot(znesek, aes(x= poslovalnica, y=znesek, fill = poslovalnica)) + 
+  geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("Graf kvantilov zneskov po poslovalnicah")
+print(graf7.5.2)
