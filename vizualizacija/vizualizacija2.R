@@ -93,7 +93,7 @@ print(graf9.2.2)
 graf9.3 <- ggplot(podatki, aes(x= mesec, y=TTM, fill = mesec)) + 
   geom_boxplot(outlier.color = "blue") +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
-  ggtitle("Graf kvantilov časov do pogodbe po mesecih") + ylab("Čas (v dnevih)") +
+  ggtitle("Graf kvantilov časov do prejema znseka po mesecih") + ylab("Čas (v dnevih)") +
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
   scale_y_continuous(limits = c(a,b))
 print(graf9.3)

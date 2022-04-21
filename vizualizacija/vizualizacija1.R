@@ -33,7 +33,9 @@ mes.del.prod <- subset(podatki, select = c(mesec, produkt))
 mes.delez.produktov <- mes.del.prod %>% group_by(mesec) %>% count(produkt) %>% 
                         summarise(delez = round(n/sum(n) * 100,2), produkt)
 df.jan <- data.frame("Jan",0,"avtomobilski")
+
 names(df.jan) <- c("mesec", "delez", "produkt")
+
 mes.delez.produktov <- rbind(mes.delez.produktov, df.jan)
 
 
@@ -140,6 +142,8 @@ prod.po.mes <- ggarrange(graf2.jan, graf2.feb, graf2.mar, graf2.apr,graf2.maj, g
   scale_colour_discrete(labels = c("avtomobilski", "hipotekarni","investicijski", "izobraževalni", "osebni", "startup", "študentski"))
 prod.po.mes <- annotate_figure(prod.po.mes, top = text_grob("Delež produktov po mesecih", 
                                       color = "blue", face = "bold", size = 14))
+
+#odstrani procente
 print(prod.po.mes)
 
 
@@ -207,7 +211,7 @@ print(graf4)
 
 graf4.1 <- ggplot(mes.del.prod, aes(mesec)) +
   geom_bar(aes(fill=produkt), position = "fill") +
-  ggtitle("Delež posameznih tipov znotraj posameznega produkta") + xlab("mesec") + ylab("delež")
+  ggtitle("Delež posameznih tipov znotraj posameznega meseca") + xlab("mesec") + ylab("delež")
 print(graf4.1)
 
 
@@ -376,6 +380,8 @@ graf6.4.2 <- ggplot(regija, aes(y=tip, fill = poslovalnica)) +
   ggtitle("Število posameznih tipov v posamezni poslovalnici") + 
   xlab("število")
 print(graf6.4.2)
+
+#prve verzije boljše
 
 
 posl.mesec.prod <- regija %>% group_by(mesec) %>% count(produkt, poslovalnica)
