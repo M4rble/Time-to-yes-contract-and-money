@@ -24,7 +24,7 @@ graf1.2 <- ggplot(delez.produktov, aes(x=1, y=delez, fill=produkt)) +
   coord_polar(theta = "y") + 
   theme_void() + ggtitle("Delež posameznih produktov (v odstotkih) v celem letu") +
   scale_fill_discrete(labels = c("avtomobilski", "hipotekarni",
-                                     "investicijski", "izobraževalni", "osebni", "startup", "študentski")) + 
+                                     "investicijski", "izobraževalni", "osebni", "startup", "študentski")) 
   
 print(graf1.2)
 
@@ -45,7 +45,7 @@ graf2.jan <- mes.delez.produktov %>% filter(mesec == "Jan") %>%
   geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
   coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
   theme_void()
-print(graf2.jan)
+#print(graf2.jan)
 
 graf2.feb <- mes.delez.produktov %>% filter(mesec == "Feb") %>% 
   ggplot(aes(x=1, y=delez, fill=produkt)) +
@@ -53,7 +53,7 @@ graf2.feb <- mes.delez.produktov %>% filter(mesec == "Feb") %>%
   geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
   coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
   theme_void()
-print(graf2.feb)
+#print(graf2.feb)
 
 graf2.mar <- mes.delez.produktov %>% filter(mesec == "Mar") %>% 
   ggplot(aes(x=1, y=delez, fill=produkt)) +
@@ -61,7 +61,7 @@ graf2.mar <- mes.delez.produktov %>% filter(mesec == "Mar") %>%
   geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
   coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
   theme_void()
-print(graf2.mar)
+#print(graf2.mar)
 
 graf2.apr <- mes.delez.produktov %>% filter(mesec == "Apr") %>% 
   ggplot(aes(x=1, y=delez, fill=produkt)) +
@@ -69,7 +69,7 @@ graf2.apr <- mes.delez.produktov %>% filter(mesec == "Apr") %>%
   geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
   coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
   theme_void()
-print(graf2.apr)
+#print(graf2.apr)
 
 graf2.maj <- mes.delez.produktov %>% filter(mesec == "Maj") %>% 
   ggplot(aes(x=1, y=delez, fill=produkt)) +
@@ -77,7 +77,7 @@ graf2.maj <- mes.delez.produktov %>% filter(mesec == "Maj") %>%
   geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
   coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
   theme_void()
-print(graf2.maj)
+#print(graf2.maj)
 
 graf2.jun <- mes.delez.produktov %>% filter(mesec == "Jun") %>% 
   ggplot(aes(x=1, y=delez, fill=produkt)) +
@@ -85,7 +85,7 @@ graf2.jun <- mes.delez.produktov %>% filter(mesec == "Jun") %>%
   geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
   coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
   theme_void()
-print(graf2.jun)
+#print(graf2.jun)
 
 graf2.jul <- mes.delez.produktov %>% filter(mesec == "Jul") %>% 
   ggplot(aes(x=1, y=delez, fill=produkt)) +
@@ -93,7 +93,7 @@ graf2.jul <- mes.delez.produktov %>% filter(mesec == "Jul") %>%
   geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
   coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
   theme_void()
-print(graf2.jul)
+#print(graf2.jul)
 
 graf2.aug <- mes.delez.produktov %>% filter(mesec == "Aug") %>% 
   ggplot(aes(x=1, y=delez, fill=produkt)) +
@@ -101,7 +101,7 @@ graf2.aug <- mes.delez.produktov %>% filter(mesec == "Aug") %>%
   geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
   coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
   theme_void()
-print(graf2.aug)
+#print(graf2.aug)
 
 graf2.sep <- mes.delez.produktov %>% filter(mesec == "Sep") %>% 
   ggplot(aes(x=1, y=delez, fill=produkt)) +
@@ -109,7 +109,7 @@ graf2.sep <- mes.delez.produktov %>% filter(mesec == "Sep") %>%
   geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
   coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
   theme_void()
-print(graf2.sep)
+#print(graf2.sep)
 
 graf2.oct <- mes.delez.produktov %>% filter(mesec == "Oct") %>% 
   ggplot(aes(x=1, y=delez, fill=produkt)) +
@@ -117,7 +117,7 @@ graf2.oct <- mes.delez.produktov %>% filter(mesec == "Oct") %>%
   geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
   coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
   theme_void()
-print(graf2.oct)
+#print(graf2.oct)
 
 graf2.nov <- mes.delez.produktov %>% filter(mesec == "Nov") %>% 
   ggplot(aes(x=1, y=delez, fill=produkt)) +
@@ -125,7 +125,7 @@ graf2.nov <- mes.delez.produktov %>% filter(mesec == "Nov") %>%
   geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
   coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
   theme_void()
-print(graf2.nov)
+#print(graf2.nov)
 
 graf2.dec <- mes.delez.produktov %>% filter(mesec == "Dec") %>% 
   ggplot(aes(x=1, y=delez, fill=produkt)) +
@@ -133,7 +133,7 @@ graf2.dec <- mes.delez.produktov %>% filter(mesec == "Dec") %>%
   geom_text(aes(label = delez), position = position_stack(vjust = 0.5))+
   coord_polar(theta = "y") + scale_fill_brewer(palette="Dark2") + 
   theme_void()
-print(graf2.dec)
+#print(graf2.dec)
 
 prod.po.mes <- ggarrange(graf2.jan, graf2.feb, graf2.mar, graf2.apr,graf2.maj, graf2.jun, graf2.jul,
           graf2.aug, graf2.sep, graf2.oct, graf2.nov, graf2.dec, ncol=3, nrow=4, 
@@ -144,7 +144,7 @@ prod.po.mes <- annotate_figure(prod.po.mes, top = text_grob("Delež produktov po
                                       color = "blue", face = "bold", size = 14))
 
 #odstrani procente
-print(prod.po.mes)
+#print(prod.po.mes)
 
 
 one.year <- c("Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
@@ -407,7 +407,7 @@ graf7.1.2 <- ggplot(znesek, aes(x= produkt, y=znesek, fill = produkt)) +
              geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
              stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
              ggtitle("Graf kvantilov zneskov po produktih") + 
-             theme(legend.position="none") +
+             theme(legend.position="none")
 print(graf7.1.2)
 
 znesek.mesec.povp <- znesek %>% group_by(mesec) %>% summarise(povpr_prod = mean(znesek))

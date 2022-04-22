@@ -1,0 +1,18 @@
+---
+title: "Poročilo projekta"
+author: "Anže Mramor"
+date: "22 4 2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r cars}
+source("~/Faks/mag 1 letnik/MzR/Time-to-yes-contract-and-money/vizualizacija/vizualizacija2.R")
+```
+
+
