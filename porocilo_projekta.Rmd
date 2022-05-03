@@ -8,11 +8,145 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-```{r cars}
-source("~/Faks/mag 1 letnik/MzR/Time-to-yes-contract-and-money/vizualizacija/vizualizacija2.R")
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
 
+```{r vizualizacija, results='hide'}
+source("~/Faks/mag 1 letnik/MzR/Time-to-yes-contract-and-money/vizualizacija/vizualizacija2.R", encoding="UTF-8")
+```
+
+## Analiza medsebojnih povezav podatkov, brez časov
+
+```{r graf1, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf1
+graf1.2
+```
+
+```{r produkt po mesecih, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+prod.po.mes
+prod.po.mes.2
+```
+
+```{r graf3, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf3
+graf3.2
+tip.po.mes
+graf3.3
+```
+
+```{r graf4, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf4
+graf4.1
+graf4.2
+graf4.3
+```
+
+```{r graf5, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf5
+graf5.1
+graf5.2
+graf5.3
+graf5.4
+```
+
+```{r graf6, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf6
+graf6.1
+graf6.3
+graf6.3.2
+graf6.4
+graf6.4.2
+```
+
+```{r graf7, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf7.1
+graf7.1.2
+graf7.2.2
+graf7.2.3
+graf7.3
+graf7.3.2
+graf7.4
+graf7.4.2
+graf7.5
+graf7.5.2
+```
+
+\newpage
+
+## Analiza časov v povezavi z ostalimi podatki
+
+```{r graf8, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf8.1
+graf8.1.2
+graf8.2
+graf8.2.2
+graf8.3
+graf8.3.2
+```
+
+```{r casi.produkt, echo=FALSE, fig.align="center"}
+casi.produkt
+```
+
+
+```{r graf9, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf9.1
+graf9.1.2
+graf9.2
+graf9.2.2
+graf9.3
+graf9.3.2
+```
+
+```{r casi.mesec, echo=FALSE, fig.align="center"}
+casi.mesec
+```
+
+```{r graf10, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf10.1
+graf10.1.2
+graf10.2
+graf10.2.2
+graf10.3
+graf10.3.2
+```
+
+```{r casi.tipi, echo=FALSE, fig.align="center"}
+casi.tip
+```
+
+```{r graf11, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf11.1
+graf11.1.2
+graf11.2
+graf11.2.2
+graf11.3
+graf11.3.2
+```
+
+```{r casi.regija, echo=FALSE, fig.align="center"}
+casi.regija
+```
+
+```{r graf12, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf12.1
+graf12.1.2
+graf12.2
+graf12.2.2
+graf12.3
+graf12.3.2
+```
+
+```{r casi.poslovalnica, echo=FALSE, fig.align="center"}
+casi.poslovalnica
+```
+
+
+## Ne-prou-zelo uporabni grafi
+```{r ostalo, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf13.1
+graf13.2
+graf13.3
+graf15.1
+```
