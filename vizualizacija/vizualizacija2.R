@@ -303,3 +303,43 @@ graf15.1 <- ggplot(mesec.avg, aes(x=mesec, y=povprecje, group=čas, color = čas
   geom_line(size=1.3) + geom_point(size=1.3) + ggtitle("Povprečje in mediana posameznega časa glede na mesec") +
   ylab("čas") + geom_line(aes(y=med, group=čas)) + geom_point(aes(y=med, group=čas), shape=17)
 #print(graf15.1)
+
+
+graf16.1.1 <- ggplot(podatki, aes(x=TTY)) + geom_histogram(color = "black", fill="white", binwidth=1) +
+              ggtitle("Histogram časov do odobritve") + xlab("čas") + ylab("število")
+print(graf16.1.1)
+
+graf16.1.2 <- ggplot(podatki, aes(x=TTY)) + geom_histogram(aes(y=..density..), color = "black", fill="white", binwidth=1) + 
+              geom_density(alpha=0.2, color = "red", size = 1.3, fill = "red") + 
+              ggtitle("Histogram in gostota časov do odobritve") + xlab("čas") + ylab("število")
+print(graf16.1.2)
+
+
+graf16.2.1 <- ggplot(podatki, aes(x=TTC)) + geom_histogram(color = "black", fill="white", binwidth=1) + 
+              ggtitle("Histogram časov do pogodbe") + xlab("čas") + ylab("število")
+print(graf16.2.1)
+
+graf16.2.2 <- ggplot(podatki, aes(x=TTC)) + geom_histogram(aes(y=..density..), color = "black", fill="white", binwidth=1) + 
+              geom_density(alpha=0.2, color = "red", size = 1.3, fill="red") + 
+              ggtitle("Histogram in gostota časov do pogodbe") + xlab("čas") + ylab("število")
+print(graf16.2.2)
+
+
+graf16.3.1 <- ggplot(podatki, aes(x=TTM)) + geom_histogram(color = "black", fill="white", binwidth=1) + 
+              ggtitle("Histogram časov do prejema denarja") + xlab("čas") + ylab("število")
+print(graf16.3.1)
+
+graf16.3.2 <- ggplot(podatki, aes(x=TTM)) + geom_histogram(aes(y=..density..), color = "black", fill="white", binwidth=1) + 
+              geom_density(alpha=0.2, color = "red", size = 1.3, fill = "red") +
+              ggtitle("Histogram in gostota časov do prejema denarja") + xlab("čas") + ylab("število")
+print(graf16.3.2)
+
+
+graf16.4.1 <- ggplot(podatki, aes(x=znesek)) + geom_histogram(color = "black", fill="white", binwidth=5) +
+              ggtitle("Histogram zneskov") + xlab("znesek") + ylab("število")
+print(graf16.4.1)
+
+graf16.4.2 <- ggplot(podatki, aes(x=znesek)) + geom_histogram(aes(y=..density..), color = "black", fill="white", binwidth=5) + 
+  geom_density(alpha=0.2, color = "red", size = 1.3, fill = "red") +
+  ggtitle("Histogram in gostota zneskov") + xlab("znesek") + ylab("število")
+print(graf16.4.2)
