@@ -24,6 +24,31 @@ podatki.ml$poslovalnica <- as.numeric(podatki.ml$poslovalnica)
 
 
 podatki.TTY <- podatki.ml %>% select(-c(TTC,TTM))
+
+# Koliko oseb jemlje kredite v več različnih poslovalnicah
+unique(podatki.TTY$ID)
+podatki.TTY %>% filter(ID == 34)
+id.posl <- podatki.TTY %>% select(ID, poslovalnica)
+unikatni <- as.data.frame(table(unique(id.posl)$ID))
+id.posl.2 <- unikatni %>% filter(Freq > 1)
+id.posl.2$Var1 <- as.numeric(as.character(id.posl.2$Var1))
+id.vec.posl.df <- podatki.TTY %>% group_by(ID) %>% 
+  summarise(contains = ID %in% id.posl.2$Var1, poslovalnica) %>% filter(contains == TRUE) %>% 
+  select(-contains)
+
+
+podatki %>% filter(TTY == 0, tip == "Sprememba")
+podatki %>% filter(TTY == 0, tip != "Sprememba")
+
+podatki %>% filter(TTC == 0, tip == "Sprememba")
+podatki %>% filter(TTC == 0, tip != "Sprememba")
+
+podatki %>% filter(TTM == 0, tip == "Sprememba")
+podatki %>% filter(TTM == 0, tip != "Sprememba")
+
+podatki %>% filter(TTM == 0)
+
+
 # korelacijska matrika
 cor_TTY <- round(cor(podatki.TTY),2)
 cor_TTY2 <- rcorr(as.matrix(podatki.TTY))
