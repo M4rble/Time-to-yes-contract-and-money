@@ -58,6 +58,81 @@ corrplot(cor_TTY, type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45)
 
 
+k <- 10
+r <- unique(sample(podatki.TTY$ID))
+# razrežemo na k intervalov
+razrez <- cut(seq_along(r), k, labels = FALSE)
+# Razbijemo vektor na k seznamov na osnovi razreza intervalov
+razbitje = split(r, razrez)
+# zdaj imamo dane indekse za vsakega od k-tih delov
+
+# prečno preverjanje
+#FOR LOOP:  for (i in 1:length(razbitje)){
+# učni podatki
+data <- podatki.TTY %>% mutate(contains = ID %in% razbitje[[1]])
+train.data <- data %>% filter(contains == FALSE) %>% select(-contains)
+# testni podatki
+test.data <- data %>% filter(contains == TRUE) %>% select(-contains)
+
+test.data$ID %in% train.data$ID
+
+
+
+napaka.cv <- function(podatki, formula, k){
+  set.seed(42)
+  # za k-kratno prečno preverjanje najprej podatke razdelimo na k enako velikih delov
+
+  # najprej naključno premešamo id-je
+  r <- unique(sample(podatki.TTY$ID))
+  # razrežemo na k intervalov
+  razrez <- cut(seq_along(r), k, labels = FALSE)
+  # Razbijemo vektor na k seznamov na osnovi razreza intervalov
+  razbitje = split(r, razrez)
+  # zdaj imamo dane indekse za vsakega od k-tih delov
+  
+  pp.napovedi = rep(0, nrow(podatki))
+  # prečno preverjanje
+  for (i in 1:length(razbitje)){
+    # učni podatki
+    data <- podatki %>% mutate(contains = ID %in% razbitje[[i]])
+    train.data <- data %>% filter(contains == FALSE) %>% select(-contains)
+    # testni podatki
+    test.data <- data %>% filter(contains == TRUE) %>% select(-contains)
+    
+    # naučimo model
+    #model = lm(data = train.data, formula = formula)
+    # napovemo za testne podatke
+    #napovedi = predict(model, newdata = test.data)
+    #pp.napovedi[ razbitje[[i]] ] = napovedi
+  }
+# izračunamo MSE
+napaka = mean((pp.napovedi - podatki$Prob) ^ 2)
+return(napaka)
+}
+
+for (i in 1:length(razbitje)){
+  # učni podatki
+  train.data = podatki.TTY[ -razbitje[[i]]]
+  # testni podatki
+  test.data = podatki.TTY[ razbitje[[i]], ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 podatki.TTC <- podatki.ml %>% select(-c(TTY,TTM))
 # korelacijska matrika
 cor_TTC <- round(cor(podatki.TTC),2)
