@@ -305,7 +305,7 @@ graf15.1 <- ggplot(mesec.avg, aes(x=mesec, y=povprecje, group=čas, color = čas
 #print(graf15.1)
 
 
-graf16.1.1 <- ggplot(podatki, aes(x=TTY)) + geom_histogram(color = "black", fill="white", binwidth=1) +
+graf16.1.1 <- ggplot(podatki, aes(x=log(TTY+1))) + geom_histogram(color = "black", fill="white", binwidth=0.1) +
               ggtitle("Histogram časov do odobritve") + xlab("čas") + ylab("število")
 print(graf16.1.1)
 

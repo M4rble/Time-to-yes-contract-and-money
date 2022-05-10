@@ -5,7 +5,7 @@ source("~/Faks/mag 1 letnik/MzR/Time-to-yes-contract-and-money/lib/libraries.R")
 uvoz <- read_excel("podatki/IZMISLJENI_PODATKI.xlsx")
 
 
-# May -> Maj
+# meseci -> številsko
 uvoz$MESEC <- gsub("May", "Maj", uvoz$MESEC)
 
 

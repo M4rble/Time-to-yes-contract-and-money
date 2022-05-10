@@ -10,20 +10,54 @@
 # za osamelce - SVM (metoda podpornih vektorjev - za odkrivanje osamelcev)
 
 
+
+# - scaling
+# - sin cos meseci (done)
+# - st_poslov (done) in povpr_znesek po času (done)
+# - log(časi)
+# - učenje po mesecih do avg in test na sep - dec
+
 source("~/Faks/mag 1 letnik/MzR/Time-to-yes-contract-and-money/vizualizacija/vizualizacija2.R", encoding = "UTF-8")
 
-podatki2 <- podatki %>% group_by(ID) %>% count(ID)
-podatki2 <- rename(podatki2, "st_poslov" = "n")
+# meseci v sin-cos relacijo
+podatki2 <- podatki
+podatki2$mesec <- gsub("Maj", "May", podatki2$mesec)
+podatki2$mesec_num <- match(podatki2$mesec, month.abb)
+mesec_sincos <- podatki2 %>% select(-mesec) %>% 
+  summarise(mesec_num, mesec_sin = format(round(sin((podatki2$mesec_num-1)*(2.*pi/12)),6), scientific = FALSE),
+            mesec_cos = format(round(cos((podatki2$mesec_num-1)*(2.*pi/12)),6), scientific = FALSE))
 
-podatki.ml <- left_join(podatki, podatki2)
-podatki.ml <- podatki.ml %>% group_by(ID) %>% mutate(skupni_znesek = sum(znesek)) %>% ungroup() %>% 
-              mutate(povpr_znesek = round(skupni_znesek/st_poslov,2)) %>% get_dummies.(c(produkt,mesec,tip,regija)) %>%
-              select(-c(produkt, mesec, tip, regija))
-podatki.ml$ID <- as.numeric(podatki.ml$ID)
+# st_poslov in skupni_znesek po mesecih
+podatki3 <- cbind(podatki, mesec_sincos)
+podatki3 <- select(podatki3, -mesec_num)
+podatki3$mesec <- factor(podatki3$mesec, levels = one.year)
+podatki3$ID <- as.numeric(podatki3$ID)
+st_poslov <- podatki3 %>% group_by(ID, mesec) %>% count(ID) %>% 
+             ungroup() %>% group_by(ID) %>% mutate(st_poslov = cumsum(n)) %>% select(-n)
+skupni_znesek <- podatki3 %>% group_by(ID, mesec) %>% 
+                 summarise(skupni_znesek = sum(znesek)) %>% 
+                 mutate(skupni_znesek = cumsum(skupni_znesek))
+skupaj <- left_join(st_poslov, skupni_znesek)
+
+podatki.2 <- left_join(podatki3, skupaj)
+
+podatki.ml <- podatki.2 %>% group_by(ID) %>% mutate(povpr_znesek = round(skupni_znesek/st_poslov,2)) %>% 
+              get_dummies.(c(produkt, tip)) %>% mutate(regija = ifelse(regija =="vzhodna",1,0)) %>%
+              select(-c(produkt, mesec, tip))
 podatki.ml$poslovalnica <- as.numeric(podatki.ml$poslovalnica)
+podatki.ml$mesec_sin <- as.numeric(podatki.ml$mesec_sin)
+podatki.ml$mesec_cos <- as.numeric(podatki.ml$mesec_cos)
+
+# scaling
+nor <-function(x){
+  (x -mean(x))/(max(x)-min(x))
+}
+
+podatki.ml.scaled <- podatki.ml %>%  mutate_at(-c(1,4), funs(c(scale(.))))
 
 
 podatki.TTY <- podatki.ml %>% select(-c(TTC,TTM))
+podatki.TTY.sc <- podatki.ml.scaled %>% select(-c(TTC,TTM))
 
 # Koliko oseb jemlje kredite v več različnih poslovalnicah
 unique(podatki.TTY$ID)
@@ -48,6 +82,10 @@ podatki %>% filter(TTM == 0, tip != "Sprememba")
 
 podatki %>% filter(TTM == 0)
 
+podatki %>% filter(TTC < TTY)
+podatki %>% filter(TTM < TTY)
+
+
 
 # korelacijska matrika
 cor_TTY <- round(cor(podatki.TTY),2)
@@ -56,6 +94,7 @@ cor_TTY2 <- rcorr(as.matrix(podatki.TTY))
 symnum(cor_TTY)
 corrplot(cor_TTY, type = "upper", order = "hclust", 
          tl.col = "black", tl.srt = 45)
+
 
 
 
@@ -80,9 +119,17 @@ test.data <- data %>% filter(contains == TRUE) %>% select(-contains)
 
 test.data$ID %in% train.data$ID
 
+TTY.RF <- randomForest(TTY ~ ., data = train.data, mtry = 3,
+                       importance = TRUE, na.action = na.omit)
+TTY.RF
+plot(TTY.RF)
 
+# Predicting the Test set results
+y_pred = predict(TTY.RF, newdata = test.data[,-4])
 
-napaka.cv <- function(podatki_vis, podatki_id, formula, k){
+pp.napovedi[ razbitje[[10]] ] <- y_pred
+
+napaka.cv <- function(podatki_vsi, podatki_id, formula, k){
   set.seed(42)
   # za k-kratno prečno preverjanje najprej podatke razdelimo na k enako velikih delov
 
@@ -98,22 +145,29 @@ napaka.cv <- function(podatki_vis, podatki_id, formula, k){
   # prečno preverjanje
   for (i in 1:length(razbitje)){
     # učni podatki
-    data <- podatki %>% mutate(contains = ID %in% razbitje[[i]])
+    data <- podatki_vsi %>% mutate(contains = ID %in% razbitje[[i]])
     train.data <- data %>% filter(contains == FALSE) %>% select(-contains)
     # testni podatki
     test.data <- data %>% filter(contains == TRUE) %>% select(-contains)
     
     # naučimo model
-    mod.L <- lm(data = train.data, formula = formula)
-    mod.lmer <- lmer(data = trian.data, formula = formula)
+    mod.RF <- randomForest(TTY ~ ., data = train.data, mtry = 3,
+                           importance = TRUE, na.action = na.omit)
+    #mod.L <- lm(data = train.data, formula = formula)
+    #mod.lmer <- lmer(data = trian.data, formula = formula)
+    #mod.glm <- glm()
     # napovemo za testne podatke
-    napovedi <- predict(model, newdata = test.data)
+    napovedi <- predict(mod.RF, newdata = test.data[,-4])
     pp.napovedi[ razbitje[[i]] ] <- napovedi
   }
 # izračunamo MSE
-napaka = mean((pp.napovedi - podatki$Prob) ^ 2)
-return(napaka)
+napaka = mean((pp.napovedi - podatki$TTY) ^ 2)
+izvoz <- list("napaka" = napaka, "napovedi" = pp.napovedi)
+return(izvoz)
 }
+
+napaka.cv(podatki.TTY, podatki.TTY$ID, formula=formula, 10)
+
 
 for (i in 1:length(razbitje)){
   # učni podatki
