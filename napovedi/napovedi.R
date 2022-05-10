@@ -11,7 +11,7 @@
 
 
 
-# - scaling
+# - scaling (done)
 # - sin cos meseci (done)
 # - st_poslov (done) in povpr_znesek po času (done)
 # - log(časi)
@@ -49,15 +49,12 @@ podatki.ml$mesec_sin <- as.numeric(podatki.ml$mesec_sin)
 podatki.ml$mesec_cos <- as.numeric(podatki.ml$mesec_cos)
 
 # scaling
-nor <-function(x){
-  (x -mean(x))/(max(x)-min(x))
-}
-
-podatki.ml.scaled <- podatki.ml %>%  mutate_at(-c(1,4), funs(c(scale(.))))
+podatki.ml.scaled <- podatki.ml %>%  mutate_at(-c(1,3,4), funs(c(scale(.))))
 
 
 podatki.TTY <- podatki.ml %>% select(-c(TTC,TTM))
 podatki.TTY.sc <- podatki.ml.scaled %>% select(-c(TTC,TTM))
+
 
 # Koliko oseb jemlje kredite v več različnih poslovalnicah
 unique(podatki.TTY$ID)
@@ -92,8 +89,68 @@ cor_TTY <- round(cor(podatki.TTY),2)
 cor_TTY2 <- rcorr(as.matrix(podatki.TTY))
 #print(cor_TTY2)
 symnum(cor_TTY)
-corrplot(cor_TTY, type = "upper", order = "hclust", 
+cor.TTY.plt <- corrplot(cor_TTY, type = "upper", order = "hclust", 
          tl.col = "black", tl.srt = 45)
+print(cor.TTY.plt)
+
+
+# prečno preverjanje in učenje
+
+napaka.cv <- function(podatki_vsi, podatki_id, formula, k){
+  set.seed(42)
+  # za k-kratno prečno preverjanje najprej podatke razdelimo na k enako velikih delov
+
+  # najprej naključno premešamo id-je
+  r <- unique(sample(podatki_id))
+  # razrežemo na k intervalov
+  razrez <- cut(seq_along(r), k, labels = FALSE)
+  # Razbijemo vektor na k seznamov na osnovi razreza intervalov
+  razbitje <- split(r, razrez)
+  # zdaj imamo dane indekse za vsakega od k-tih delov
+  
+  pp.napovedi <- rep(NA, nrow(podatki_vsi))
+  pp.napovedi2 <- rep(NA, nrow(podatki_vsi))
+  
+  # prečno preverjanje
+  for (i in 1:length(razbitje)){
+    # učni podatki krediti neodvisni
+    data <- podatki_vsi %>% mutate(contains = ID %in% razbitje[[i]])
+    train.data <- data %>% filter(contains == FALSE) %>% select(-contains)
+    # testni podatki krediti neodvisni
+    test.data <- data %>% filter(contains == TRUE) %>% select(-contains)
+    
+    # učni podatki 1 id v 1 trainu
+    train.data.2 <- data %>% group_by(ID) %>% sample_n(1) %>% 
+      filter(contains == FALSE) %>% select(-contains)
+    # testni podatki 1 id v 1 testu
+    test.data.2 <- data %>% group_by(ID) %>% sample_n(1) %>%
+      filter(contains == TRUE) %>% select(-contains)
+    
+    # naučimo model
+    #mod.RF <- randomForest(TTY ~ ., data = train.data, mtry = 3, importance = TRUE, na.action = na.omit)
+    mod.L <- lm(data = train.data[,-1], formula = formula)
+    mod.L2 <- lm(data = train.data.2[,-1], formula = formula)
+    #mod.lmer <- lmer(data = trian.data, formula = formula)
+    #mod.glm <- glm()
+    # napovemo za testne podatke
+    napovedi <- predict(mod.L, newdata = test.data[,-c(1,5)])
+    napovedi2 <- predict(mod.L2, newdata = test.data.2[,-c(1,5)])
+    pp.napovedi[ razbitje[[i]] ] <- napovedi
+    pp.napovedi2[ razbitje[[i]] ] <- napovedi2
+  }
+# izračunamo MSE
+napaka = mean((pp.napovedi - podatki_vsi$TTY) ^ 2)
+napaka2 = mean((pp.napovedi2 - podatki_vsi$TTY) ^ 2)
+izvoz <- list("napaka 1" = napaka, "napaka 2" = napaka2, "napovedi 1" = pp.napovedi, "napovedi 2" = pp.napovedi2)
+return(izvoz)
+}
+
+napaka.cv(podatki.TTY, podatki.TTY$ID, formula=TTY~., 3)
+# neka napaka, meče vn NA/0, kjer nebi smele bit ??
+
+
+
+
 
 
 
@@ -129,89 +186,6 @@ y_pred = predict(TTY.RF, newdata = test.data[,-4])
 
 pp.napovedi[ razbitje[[10]] ] <- y_pred
 
-napaka.cv <- function(podatki_vsi, podatki_id, formula, k){
-  set.seed(42)
-  # za k-kratno prečno preverjanje najprej podatke razdelimo na k enako velikih delov
-
-  # najprej naključno premešamo id-je
-  r <- unique(sample(podatki_id))
-  # razrežemo na k intervalov
-  razrez <- cut(seq_along(r), k, labels = FALSE)
-  # Razbijemo vektor na k seznamov na osnovi razreza intervalov
-  razbitje <- split(r, razrez)
-  # zdaj imamo dane indekse za vsakega od k-tih delov
-  
-  pp.napovedi <- rep(0, nrow(podatki_vsi))
-  # prečno preverjanje
-  for (i in 1:length(razbitje)){
-    # učni podatki
-    data <- podatki_vsi %>% mutate(contains = ID %in% razbitje[[i]])
-    train.data <- data %>% filter(contains == FALSE) %>% select(-contains)
-    # testni podatki
-    test.data <- data %>% filter(contains == TRUE) %>% select(-contains)
-    
-    # naučimo model
-    mod.RF <- randomForest(TTY ~ ., data = train.data, mtry = 3,
-                           importance = TRUE, na.action = na.omit)
-    #mod.L <- lm(data = train.data, formula = formula)
-    #mod.lmer <- lmer(data = trian.data, formula = formula)
-    #mod.glm <- glm()
-    # napovemo za testne podatke
-    napovedi <- predict(mod.RF, newdata = test.data[,-4])
-    pp.napovedi[ razbitje[[i]] ] <- napovedi
-  }
-# izračunamo MSE
-napaka = mean((pp.napovedi - podatki$TTY) ^ 2)
-izvoz <- list("napaka" = napaka, "napovedi" = pp.napovedi)
-return(izvoz)
-}
-
-napaka.cv(podatki.TTY, podatki.TTY$ID, formula=formula, 10)
-
-
-for (i in 1:length(razbitje)){
-  # učni podatki
-  train.data = podatki.TTY[ -razbitje[[i]]]
-  # testni podatki
-  test.data = podatki.TTY[ razbitje[[i]], ]
-}
-
-
-#funkcija deli točne napovedi z vsoto vseh napovedi = točnost napovedi
-accuracy <- function(x)
-{sum(diag(x)/(sum(rowSums(x)))) * 100
-}
-
-
-# RANDOM FOREST
-library(randomForest)
-
-TTY.RF <- randomForest(TTY ~ ., data = train.data, mtry = 3,
-                         importance = TRUE, na.action = na.omit)
-TTY.RF
-plot(TTY.RF)
-
-# Predicting the Test set results
-y_pred = predict(TTY.RF, newdata = test.data[,-4])
-
-
-confusion_mtx = table(test.data$TTY, y_pred)
-
-accuracy(confusion_mtx2)
-
-napaka = mean((y_pred2 - test.data$TTY) ^ 2)
-napaka
-
-df.napak <- data.frame(cbind(test.data$TTY, round(y_pred2,4)))
-df.napak <- rename(df.napak, c("podatek" = "X1", "napoved"="X2"))
-df.napak <- df.napak %>% summarise(podatek, napoved,
-                                   abs_napaka = as.numeric(format(round(abs(y_pred2 - test.data$TTY),4), scientific=FALSE)),
-                                   kv_napaka = as.numeric(format(round((y_pred2 - test.data$TTY) ^ 2,4), scientific=FALSE)))
-colMeans(df.napak)
-
-
-
-
 
 
 # 2. PRISTOP - znotraj enega train.seta max 1 posel na id
@@ -241,6 +215,36 @@ length(unique(train.data.2$ID)) == 1038 - length(unique(test.data.2$ID))
 
 
 
+#funkcija deli točne napovedi z vsoto vseh napovedi = točnost napovedi
+accuracy <- function(x)
+{sum(diag(x)/(sum(rowSums(x)))) * 100
+}
+
+
+# RANDOM FOREST
+
+TTY.RF <- randomForest(TTY ~ ., data = train.data, mtry = 3,
+                       importance = TRUE, na.action = na.omit)
+TTY.RF
+plot(TTY.RF)
+
+# Predicting the Test set results
+y_pred = predict(TTY.RF, newdata = test.data[,-4])
+
+
+confusion_mtx = table(test.data$TTY, y_pred)
+
+accuracy(confusion_mtx2)
+
+napaka = mean((y_pred2 - test.data$TTY) ^ 2)
+napaka
+
+df.napak <- data.frame(cbind(test.data$TTY, round(y_pred2,4)))
+df.napak <- rename(df.napak, c("podatek" = "X1", "napoved"="X2"))
+df.napak <- df.napak %>% summarise(podatek, napoved,
+                                   abs_napaka = as.numeric(format(round(abs(y_pred2 - test.data$TTY),4), scientific=FALSE)),
+                                   kv_napaka = as.numeric(format(round((y_pred2 - test.data$TTY) ^ 2,4), scientific=FALSE)))
+colMeans(df.napak)
 
 
 
@@ -250,6 +254,8 @@ length(unique(train.data.2$ID)) == 1038 - length(unique(test.data.2$ID))
 
 
 
+# ŠE ENKRAT ISTO ZA TTC IN TTM
+#=============================
 
 
 

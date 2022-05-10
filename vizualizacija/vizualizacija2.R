@@ -40,6 +40,21 @@ graf8.2.2 <- graf8.2 + geom_line(aes(y=mean(TTC), group=TTC, colour="Povprečje 
 #print(graf8.2.2)
 
 
+graf8.2.3 <- ggplot(podatki, aes(x=produkt, y=TTC-TTY, fill = produkt)) + 
+  geom_boxplot(outlier.colour = "blue") + 
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("TTC - TTY") + ylab("Čas (v dnevih)") +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
+  scale_fill_manual(labels = c("avtomobilski", "hipotekarni", "investicijski", "izobraževalni", "osebni", "startup", "študentski"),
+                    values = palette("Dark2"))  + scale_y_continuous(limits = c(a,b))
+#print(graf8.2.3)
+
+graf8.2.4 <- graf8.2.3 + geom_line(aes(y=mean(TTC - TTY), group=TTC, colour="Povprečje vseh"), lwd=1.3) + 
+  geom_line(aes(y=median(TTC-TTY), group=TTC, colour = "Mediana vseh"), lwd = 1) +
+  scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
+                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+#print(graf8.2.4)
+
 graf8.3 <- ggplot(podatki, aes(x= produkt, y=TTM, fill = produkt)) + 
   geom_boxplot(outlier.color = "blue") + 
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
@@ -55,10 +70,30 @@ graf8.3.2 <- graf8.3 + geom_line(aes(y=mean(TTM), group=TTM, colour="Povprečje 
                       values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
 #print(graf8.3.2)
 
+graf8.3.3 <- ggplot(podatki, aes(x=produkt, y=TTM-TTC, fill = produkt)) + 
+  geom_boxplot(outlier.colour = "blue") + 
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("TTM - TTC") + ylab("Čas (v dnevih)") +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
+  scale_fill_manual(labels = c("avtomobilski", "hipotekarni", "investicijski", "izobraževalni", "osebni", "startup", "študentski"),
+                    values = palette("Dark2"))  + scale_y_continuous(limits = c(a,b))
+#print(graf8.3.3)
+
+graf8.3.4 <- graf8.3.3 + geom_line(aes(y=mean(TTM - TTC), group=TTM, colour="Povprečje vseh"), lwd=1.3) + 
+  geom_line(aes(y=median(TTM-TTY), group=TTM, colour = "Mediana vseh"), lwd = 1) +
+  scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
+                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+#print(graf8.3.4)
+
 casi.produkt <- ggarrange(graf8.1.2, graf8.2.2, graf8.3.2, ncol=3, nrow=1, common.legend = TRUE, legend = "bottom")
 casi.produkt <- annotate_figure(casi.produkt, top = text_grob("Grafi kvantilov časov po produktih", 
                                                             color = "blue", face = "bold", size = 14))
 #print(casi.produkt)
+
+casi.produkt.rac <- ggarrange(graf8.1.2, graf8.2.4, graf8.3.4, ncol=3, nrow=1, common.legend = TRUE, legend = "bottom")
+casi.produkt.rac <- annotate_figure(casi.produkt.rac, top = text_grob("Grafi kvantilov časov racionaliziranih glede na TTY po produktih", 
+                                                              color = "blue", face = "bold", size = 14))
+#print(casi.produkt.rac)
 
 
 # times vs mesec
@@ -91,6 +126,20 @@ graf9.2.2 <- graf9.2 + geom_line(aes(y=mean(TTC), group=TTC, colour="Povprečje 
                       values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
 #print(graf9.2.2)
 
+graf9.2.3 <- ggplot(podatki, aes(x=mesec, y=TTC-TTY, fill = mesec)) + 
+  geom_boxplot(outlier.colour = "blue") + 
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("TTC - TTY") + ylab("Čas (v dnevih)") +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
+  scale_y_continuous(limits = c(a,b))
+#print(graf9.2.3)
+
+graf9.2.4 <- graf9.2.3 + geom_line(aes(y=mean(TTC - TTY), group=TTC, colour="Povprečje vseh"), lwd=1.3) + 
+  geom_line(aes(y=median(TTC-TTY), group=TTC, colour = "Mediana vseh"), lwd = 1) +
+  scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
+                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+#print(graf9.2.4)
+
 
 graf9.3 <- ggplot(podatki, aes(x= mesec, y=TTM, fill = mesec)) + 
   geom_boxplot(outlier.color = "blue") +
@@ -106,10 +155,29 @@ graf9.3.2 <- graf9.3 + geom_line(aes(y=mean(TTM), group=TTM, colour="Povprečje 
                       values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
 #print(graf9.3.2)
 
+graf9.3.3 <- ggplot(podatki, aes(x=mesec, y=TTM-TTC, fill = mesec)) + 
+  geom_boxplot(outlier.colour = "blue") + 
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("TTM - TTC") + ylab("Čas (v dnevih)") +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
+  scale_y_continuous(limits = c(a,b))
+#print(graf9.3.3)
+
+graf9.3.4 <- graf9.3.3 + geom_line(aes(y=mean(TTM - TTC), group=TTM, colour="Povprečje vseh"), lwd=1.3) + 
+  geom_line(aes(y=median(TTM-TTC), group=TTC, colour = "Mediana vseh"), lwd = 1) +
+  scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
+                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+#print(graf9.3.4)
+
 casi.mesec <- ggarrange(graf9.1.2, graf9.2.2, graf9.3.2, ncol=3, nrow=1, common.legend = TRUE, legend = "bottom")
 casi.mesec <- annotate_figure(casi.mesec, top = text_grob("Grafi kvantilov časov po mesecih", 
                                                               color = "blue", face = "bold", size = 14))
 #print(casi.mesec)
+
+casi.mesec.rac <- ggarrange(graf9.1.2, graf9.2.4, graf9.3.4, ncol=3, nrow=1, common.legend = TRUE, legend = "bottom")
+casi.mesec.rac <- annotate_figure(casi.mesec.rac, top = text_grob("Grafi kvantilov časov racionaliziranih glede na YYT po mesecih", 
+                                                          color = "blue", face = "bold", size = 14))
+#print(casi.mesec.rac)
 
 
 # times vs tip 
@@ -143,6 +211,20 @@ graf10.2.2 <- graf10.2 + geom_line(aes(y=mean(TTC), group=TTC, colour="Povprečj
                       values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
 #print(graf10.2.2)
 
+graf10.2.3 <- ggplot(podatki, aes(x=tip, y=TTC-TTY, fill = tip)) + 
+  geom_boxplot(outlier.colour = "blue") + 
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("TTC - TTY") + ylab("Čas (v dnevih)") +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
+  scale_fill_manual(values = palette("Dark2")) + scale_y_continuous(limits = c(a,b))
+#print(graf10.2.3)
+
+graf10.2.4 <- graf10.2.3 + geom_line(aes(y=mean(TTC - TTY), group=TTC, colour="Povprečje vseh"), lwd=1.3) + 
+  geom_line(aes(y=median(TTC-TTY), group=TTC, colour = "Mediana vseh"), lwd = 1) +
+  scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
+                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+#print(graf10.2.4)
+
 
 graf10.3 <- ggplot(podatki, aes(x= tip, y=TTM, fill = tip)) + 
   geom_boxplot(outlier.color = "blue") + 
@@ -158,10 +240,29 @@ graf10.3.2 <- graf10.3 + geom_line(aes(y=mean(TTM), group=TTM, colour="Povprečj
                       values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
 #print(graf10.3.2)
 
+graf10.3.3 <- ggplot(podatki, aes(x=tip, y=TTM-TTC, fill = tip)) + 
+  geom_boxplot(outlier.colour = "blue") + 
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("TTM - TTC") + ylab("Čas (v dnevih)") +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
+  scale_fill_manual(values = palette("Dark2")) + scale_y_continuous(limits = c(a,b))
+#print(graf10.3.3)
+
+graf10.3.4 <- graf10.3.3 + geom_line(aes(y=mean(TTM - TTC), group=TTM, colour="Povprečje vseh"), lwd=1.3) + 
+  geom_line(aes(y=median(TTM-TTC), group=TTC, colour = "Mediana vseh"), lwd = 1) +
+  scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
+                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+#print(graf10.3.4)
+
 casi.tip <- ggarrange(graf10.1.2, graf10.2.2, graf10.3.2, ncol=3, nrow=1, common.legend = TRUE, legend = "bottom")
 casi.tip <- annotate_figure(casi.tip, top = text_grob("Grafi kvantilov časov po tipih", 
                                                               color = "blue", face = "bold", size = 14))
 #print(casi.tip)
+
+casi.tip.rac <- ggarrange(graf10.1.2, graf10.2.4, graf10.3.4, ncol=3, nrow=1, common.legend = TRUE, legend = "bottom")
+casi.tip.rac <- annotate_figure(casi.tip.rac, top = text_grob("Grafi kvantilov časov racionaliziranih glede na YYT po tipih", 
+                                                      color = "blue", face = "bold", size = 14))
+#print(casi.tip.rac)
 
 
 # time vs regija
@@ -195,6 +296,20 @@ graf11.2.2 <- graf11.2 + geom_line(aes(y=mean(TTC), group=TTC, colour="Povprečj
                       values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
 #print(graf11.2.2)
 
+graf11.2.3 <- ggplot(podatki, aes(x=regija, y=TTC-TTY, fill = regija)) + 
+  geom_boxplot(outlier.colour = "blue") + 
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("TTC - TTY") + ylab("Čas (v dnevih)") +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
+  scale_fill_manual(values = palette("Dark2")) + scale_y_continuous(limits = c(a,b))
+#print(graf11.2.3)
+
+graf11.2.4 <- graf11.2.3 + geom_line(aes(y=mean(TTC - TTY), group=TTC, colour="Povprečje vseh"), lwd=1.3) + 
+  geom_line(aes(y=median(TTC-TTY), group=TTC, colour = "Mediana vseh"), lwd = 1) +
+  scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
+                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+#print(graf11.2.4)
+
 
 graf11.3 <- ggplot(podatki, aes(x= regija, y=TTM, fill = regija)) + 
   geom_boxplot(outlier.color = "blue") + 
@@ -210,10 +325,30 @@ graf11.3.2 <- graf11.3 + geom_line(aes(y=mean(TTM), group=TTM, colour="Povprečj
                       values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
 #print(graf11.3.2)
 
+graf11.3.3 <- ggplot(podatki, aes(x=regija, y=TTM-TTC, fill = regija)) + 
+  geom_boxplot(outlier.colour = "blue") + 
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("TTM - TTC") + ylab("Čas (v dnevih)") +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
+  scale_fill_manual(values = palette("Dark2")) + scale_y_continuous(limits = c(a,b))
+#print(graf11.3.3)
+
+graf11.3.4 <- graf11.3.3 + geom_line(aes(y=mean(TTM - TTC), group=TTM, colour="Povprečje vseh"), lwd=1.3) + 
+  geom_line(aes(y=median(TTM-TTC), group=TTM, colour = "Mediana vseh"), lwd = 1) +
+  scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
+                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+#print(graf11.3.4)
+
+
 casi.regija <- ggarrange(graf11.1.2, graf11.2.2, graf11.3.2, ncol=3, nrow=1, common.legend = TRUE, legend = "bottom")
 casi.regija <- annotate_figure(casi.regija, top = text_grob("Grafi kvantilov časov po regijah", 
                                                               color = "blue", face = "bold", size = 14))
 #print(casi.regija)
+
+casi.regija.rac <- ggarrange(graf11.1.2, graf11.2.4, graf11.3.4, ncol=3, nrow=1, common.legend = TRUE, legend = "bottom")
+casi.regija.rac <- annotate_figure(casi.regija.rac, top = text_grob("Grafi kvantilov časov racionaliziranih glede na TTY po regijah", 
+                                                            color = "blue", face = "bold", size = 14))
+#print(casi.regija.rac)
 
 
 # time vs poslovalnica
@@ -247,6 +382,19 @@ graf12.2.2 <- graf12.2 + geom_line(aes(y=mean(TTC), group=TTC, colour="Povprečj
                       values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
 #print(graf12.2.2)
 
+graf12.2.3 <- ggplot(podatki, aes(x=poslovalnica, y=TTC-TTY, fill = poslovalnica)) + 
+  geom_boxplot(outlier.colour = "blue") + 
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("TTC - TTY") + ylab("Čas (v dnevih)") +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
+  scale_fill_manual(values = palette("Dark2")) + scale_y_continuous(limits = c(a,b))
+#print(graf12.2.3)
+
+graf12.2.4 <- graf12.2.3 + geom_line(aes(y=mean(TTC - TTY), group=TTC, colour="Povprečje vseh"), lwd=1.3) + 
+  geom_line(aes(y=median(TTC-TTY), group=TTC, colour = "Mediana vseh"), lwd = 1) +
+  scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
+                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+#print(graf12.2.4)
 
 graf12.3 <- ggplot(podatki, aes(x= poslovalnica, y=TTM, fill = poslovalnica)) + 
   geom_boxplot(outlier.color = "blue") + 
@@ -262,10 +410,29 @@ graf12.3.2 <- graf12.3 + geom_line(aes(y=mean(TTM), group=TTM, colour="Povprečj
                       values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
 #print(graf12.3.2)
 
+graf12.3.3 <- ggplot(podatki, aes(x=poslovalnica, y=TTM-TTC, fill = poslovalnica)) + 
+  geom_boxplot(outlier.colour = "blue") + 
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("TTM - TTC") + ylab("Čas (v dnevih)") +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
+  scale_fill_manual(values = palette("Dark2")) + scale_y_continuous(limits = c(a,b))
+#print(graf12.3.3)
+
+graf12.3.4 <- graf12.3.3 + geom_line(aes(y=mean(TTM - TTC), group=TTM, colour="Povprečje vseh"), lwd=1.3) + 
+  geom_line(aes(y=median(TTM-TTC), group=TTM, colour = "Mediana vseh"), lwd = 1) +
+  scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
+                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+#print(graf12.3.4)
+
 casi.poslovalnica <- ggarrange(graf12.1.2, graf12.2.2, graf12.3.2, ncol=3, nrow=1, common.legend = TRUE, legend = "bottom")
 casi.poslovalnica <- annotate_figure(casi.poslovalnica, top = text_grob("Grafi kvantilov časov po poslovalnicah", 
                                                               color = "blue", face = "bold", size = 14))
 #print(casi.poslovalnica)
+
+casi.poslovalnica.rac <- ggarrange(graf12.1.2, graf12.2.4, graf12.3.4, ncol=3, nrow=1, common.legend = TRUE, legend = "bottom")
+casi.poslovalnica.rac <- annotate_figure(casi.poslovalnica.rac, top = text_grob("Grafi kvantilov časov racionaliziranih glede na YYT po poslovalnicah", 
+                                                                        color = "blue", face = "bold", size = 14))
+#print(casi.poslovalnica.rac)
 
 
 # korelacije times - znesek
@@ -275,9 +442,15 @@ graf13.1 <- ggplot(podatki, aes(x=TTY, y=znesek)) + geom_point() +
 graf13.2 <- ggplot(podatki, aes(x=TTC, y=znesek)) + geom_point() +
            ggtitle("Korelacija med TTC in zneskom")
 #print(graf13.2)
+graf13.2.2 <- ggplot(podatki, aes(x=TTC-TTY, y=znesek)) + geom_point() +
+  ggtitle("Korelacija med TTC-TTY in zneskom")
+#print(graf13.2.2)
 graf13.3 <- ggplot(podatki, aes(x=TTM, y=znesek)) + geom_point() + 
            ggtitle("Korelacija med TTM in zneskom")
 #print(graf13.3)
+graf13.3.2 <- ggplot(podatki, aes(x=TTM-TTC, y=znesek)) + geom_point() +
+  ggtitle("Korelacija med TTM-TTC in zneskom")
+#print(graf13.3.2)
 
 # korelacija times - poslovalnica
 
@@ -305,41 +478,57 @@ graf15.1 <- ggplot(mesec.avg, aes(x=mesec, y=povprecje, group=čas, color = čas
 #print(graf15.1)
 
 
-graf16.1.1 <- ggplot(podatki, aes(x=log(TTY+1))) + geom_histogram(color = "black", fill="white", binwidth=0.1) +
+graf16.1.1 <- ggplot(podatki, aes(x=TTY)) + geom_histogram(color = "black", fill="white", binwidth=1) +
               ggtitle("Histogram časov do odobritve") + xlab("čas") + ylab("število")
-print(graf16.1.1)
+#print(graf16.1.1)
 
 graf16.1.2 <- ggplot(podatki, aes(x=TTY)) + geom_histogram(aes(y=..density..), color = "black", fill="white", binwidth=1) + 
               geom_density(alpha=0.2, color = "red", size = 1.3, fill = "red") + 
               ggtitle("Histogram in gostota časov do odobritve") + xlab("čas") + ylab("število")
-print(graf16.1.2)
+#print(graf16.1.2)
+
+graf16.1.3 <- ggplot(podatki, aes(x=log(TTY+1))) + geom_histogram(color = "black", fill="white", binwidth=0.1) +
+  ggtitle("Histogram logaritmranih časov do odobritve") + xlab("čas") + ylab("število")
+#print(graf16.1.3)
 
 
 graf16.2.1 <- ggplot(podatki, aes(x=TTC)) + geom_histogram(color = "black", fill="white", binwidth=1) + 
               ggtitle("Histogram časov do pogodbe") + xlab("čas") + ylab("število")
-print(graf16.2.1)
+#print(graf16.2.1)
 
 graf16.2.2 <- ggplot(podatki, aes(x=TTC)) + geom_histogram(aes(y=..density..), color = "black", fill="white", binwidth=1) + 
               geom_density(alpha=0.2, color = "red", size = 1.3, fill="red") + 
               ggtitle("Histogram in gostota časov do pogodbe") + xlab("čas") + ylab("število")
-print(graf16.2.2)
+#print(graf16.2.2)
+
+graf16.2.3 <- ggplot(podatki, aes(x=log(TTC+1))) + geom_histogram(color = "black", fill="white", binwidth=0.1) +
+  ggtitle("Histogram logaritmiranih časov do pogodbe") + xlab("čas") + ylab("število")
+#print(graf16.2.3)
 
 
 graf16.3.1 <- ggplot(podatki, aes(x=TTM)) + geom_histogram(color = "black", fill="white", binwidth=1) + 
               ggtitle("Histogram časov do prejema denarja") + xlab("čas") + ylab("število")
-print(graf16.3.1)
+#print(graf16.3.1)
 
 graf16.3.2 <- ggplot(podatki, aes(x=TTM)) + geom_histogram(aes(y=..density..), color = "black", fill="white", binwidth=1) + 
               geom_density(alpha=0.2, color = "red", size = 1.3, fill = "red") +
               ggtitle("Histogram in gostota časov do prejema denarja") + xlab("čas") + ylab("število")
-print(graf16.3.2)
+#print(graf16.3.2)
+
+graf16.3.3 <- ggplot(podatki, aes(x=log(TTM+1))) + geom_histogram(color = "black", fill="white", binwidth=0.1) +
+  ggtitle("Histogram logaritmiranih časov do prejema denarja") + xlab("čas") + ylab("število")
+#print(graf16.3.3)
 
 
 graf16.4.1 <- ggplot(podatki, aes(x=znesek)) + geom_histogram(color = "black", fill="white", binwidth=5) +
               ggtitle("Histogram zneskov") + xlab("znesek") + ylab("število")
-print(graf16.4.1)
+#print(graf16.4.1)
 
 graf16.4.2 <- ggplot(podatki, aes(x=znesek)) + geom_histogram(aes(y=..density..), color = "black", fill="white", binwidth=5) + 
   geom_density(alpha=0.2, color = "red", size = 1.3, fill = "red") +
   ggtitle("Histogram in gostota zneskov") + xlab("znesek") + ylab("število")
-print(graf16.4.2)
+#print(graf16.4.2)
+
+graf16.4.3 <- ggplot(podatki, aes(x=log(znesek))) + geom_histogram(color = "black", fill="white", binwidth=0.1) +
+  ggtitle("Histogram logaritmranih zneskov") + xlab("znesek") + ylab("število")
+#print(graf16.4.3)

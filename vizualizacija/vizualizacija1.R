@@ -12,7 +12,7 @@ delez.produktov <- rename(del.produktov, c("produkt" = "Var1", "delez" = "Freq")
 graf1 <- ggplot(delez.produktov, aes(x="", y=delez, fill =produkt)) +
   geom_col(position = position_dodge(width = 0.9)) +
   geom_label(aes(x="", y = delez + 2, label = delez), 
-            position = position_dodge(width = 0.9), show.legend = FALSE) +
+            position = position_dodge(width = 0.9), show.legend = FALSE) + xlab("")
   ggtitle("Delež posameznih produktov (v odstotkih) v celem letu")
 #print(graf1)
 
@@ -141,7 +141,6 @@ prod.po.mes <- ggarrange(graf2.jan, graf2.feb, graf2.mar, graf2.apr,graf2.maj, g
 prod.po.mes <- annotate_figure(prod.po.mes, top = text_grob("Delež produktov po mesecih", 
                                       color = "blue", face = "bold", size = 14))
 
-#odstrani procente
 #print(prod.po.mes)
 
 
@@ -210,7 +209,7 @@ graf4 <- ggplot(mesec.produkti, aes(x=mesec, y=stevilo, group=produkt, colour=pr
 
 graf4.1 <- ggplot(mes.del.prod, aes(mesec)) +
   geom_bar(aes(fill=produkt), position = "fill") +
-  ggtitle("Delež posameznih tipov znotraj posameznega meseca") + xlab("mesec") + ylab("delež")
+  ggtitle("Delež posameznega produkta znotraj posameznega meseca") + xlab("mesec") + ylab("delež")
 #print(graf4.1)
 
 
