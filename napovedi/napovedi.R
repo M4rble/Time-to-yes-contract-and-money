@@ -108,8 +108,8 @@ napaka.cv <- function(podatki_vsi, podatki_id, formula, k){
   razbitje <- split(r, razrez)
   # zdaj imamo dane indekse za vsakega od k-tih delov
   
-  pp.napovedi <- rep(NA, nrow(podatki_vsi))
-  pp.napovedi2 <- rep(NA, nrow(podatki_vsi))
+  pp.napovedi <- rep(0, nrow(podatki_vsi))
+  pp.napovedi2 <- rep(0, length(r))
   
   # prečno preverjanje
   for (i in 1:length(razbitje)){
@@ -128,8 +128,8 @@ napaka.cv <- function(podatki_vsi, podatki_id, formula, k){
     
     # naučimo model
     #mod.RF <- randomForest(TTY ~ ., data = train.data, mtry = 3, importance = TRUE, na.action = na.omit)
-    mod.L <- lm(data = train.data[,-1], formula = formula)
-    mod.L2 <- lm(data = train.data.2[,-1], formula = formula)
+    mod.L <- lm(data = train.data[,-c(1,17,21)], formula = formula)
+    mod.L2 <- lm(data = train.data.2[,-c(1,17,21)], formula = formula)
     #mod.lmer <- lmer(data = trian.data, formula = formula)
     #mod.glm <- glm()
     # napovemo za testne podatke
@@ -145,13 +145,23 @@ izvoz <- list("napaka 1" = napaka, "napaka 2" = napaka2, "napovedi 1" = pp.napov
 return(izvoz)
 }
 
-napaka.cv(podatki.TTY, podatki.TTY$ID, formula=TTY~., 3)
+lin.mod <- napaka.cv(podatki.TTY, podatki.TTY$ID, formula=TTY~., 10)
 # neka napaka, meče vn NA/0, kjer nebi smele bit ??
+lin.mod$`napovedi 2`
 
 
+mod.L <- lm(data = train.data[,-c(1,17,21)], formula = TTY~.)
+summary(mod.L)
+cor(train.data[,-c(1,17,21)])
+alias(mod.L)
+napovedi <- predict(mod.L, newdata = test.data[,-c(1,5)])
+# ugotovimo, da sta stolpca produkt_študentski in tip_Spremembra popolnoma korelirana - ju odstranimo iz modela
 
-
-
+mod.L2 <- lm(data = train.data.2[,-c(1,17,21)], formula = TTY~.)
+summary(mod.L2)
+cor(train.data.2[,-c(1,17,21)])
+alias(mod.L2)
+# enako za drugi data set
 
 
 

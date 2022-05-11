@@ -10,11 +10,18 @@ del.produktov <- as.data.frame(prop.table(table(podatki$produkt))*100)
 delez.produktov <- rename(del.produktov, c("produkt" = "Var1", "delez" = "Freq"))
 
 graf1 <- ggplot(delez.produktov, aes(x="", y=delez, fill =produkt)) +
-  geom_col(position = position_dodge(width = 0.9)) +
+  geom_col(width=0.7, position = position_dodge(width = 1)) + 
   geom_label(aes(x="", y = delez + 2, label = delez), 
-            position = position_dodge(width = 0.9), show.legend = FALSE) + xlab("")
+            position = position_dodge(width = 1), show.legend = FALSE) + xlab("") + 
   ggtitle("Delež posameznih produktov (v odstotkih) v celem letu")
 #print(graf1)
+
+graf1.1 <- ggplot(podatki, aes(y=produkt, fill =produkt)) +
+  geom_bar(position = position_dodge(width = 0.9)) + coord_flip() +
+  ylab("produkt") + xlab("število") +
+  ggtitle("Število posameznih produktov (v odstotkih) v celem letu") + 
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+#print(graf1.1)
 
 graf1.2 <- ggplot(delez.produktov, aes(x=1, y=delez, fill=produkt)) +
   geom_col() +
@@ -160,12 +167,19 @@ prod.po.mes.2 <- ggplot(mes.delez.produktov.2, aes(x=mesec, y=delez, group=produ
 del.tipov <- as.data.frame(prop.table(table(podatki$tip))*100)
 delez.tipov <- rename(del.tipov, c("tip" = "Var1", "delez" = "Freq"))
 
-graf3 <- ggplot(delez.tipov, aes(x="", y=delez, fill = tip)) +
-  geom_col(position = position_dodge(width = 0.9)) +
+graf3 <- ggplot(delez.tipov, aes(x="", y=delez, fill =tip)) +
+  geom_col(width=0.7, position = position_dodge(width = 1)) + 
   geom_label(aes(x="", y = delez + 2, label = delez), 
-             position = position_dodge(width = 0.9), show.legend = FALSE) + 
-  ggtitle("Delež posameznih tipov (v odstotkih) v celem letu") + xlab("tip") + ylab("delež (v %)")
+             position = position_dodge(width = 1), show.legend = FALSE) + xlab("tip") + 
+  ggtitle("Delež posameznih tipov (v odstotkih) v celem letu") + ylab("delež (v %)")
 #print(graf3)
+
+graf3.1 <- ggplot(podatki, aes(y=tip, fill = tip)) +
+  geom_bar(position = position_dodge(width = 0.9)) + coord_flip() +
+  ylab("produkt") + xlab("število") +
+  ggtitle("Število posameznih tipov (v odstotkih) v celem letu") + 
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+#print(graf3.1)
 
 graf3.2 <- ggplot(delez.tipov, aes(x=1, y=delez, fill=tip)) +
   geom_col() +
@@ -188,16 +202,17 @@ prod.tip <- subset(podatki, select = c(produkt, tip))
 prod.del.tip <- prod.tip %>% group_by(produkt) %>% count(tip) %>% 
   summarise(delez = n/sum(n) * 100, tip)
 
-graf3.3 <- ggplot(prod.tip, aes(produkt)) +
-  geom_bar(aes(fill=tip), position = "fill") +
-  ggtitle("Delež posameznih tipov znotraj posameznega produkta") + xlab("produkt") + ylab("delež") + 
-  theme(axis.text.x=element_text(angle=45, hjust=1))
+graf3.3 <- ggplot(prod.del.tip, aes(x=produkt, y=delez, fill=tip)) + 
+  geom_col(position = position_dodge(width = 0.9)) +
+  ggtitle("Delež posameznih tipov znotraj posameznega produkta") + xlab("produkt") + 
+  ylab("delež (v %") + theme(axis.text.x=element_text(angle=45, hjust=1))
 #print(graf3.3)
 
 
 #MESEC
 mes.del.prod$mesec <- factor(mes.del.prod$mesec, levels=one.year)
-mesec.produkti <- mes.del.prod %>% group_by(mesec) %>% count(produkt)
+mesec.produkti <- mes.del.prod %>% group_by(mesec) %>% count(produkt) %>% 
+                  mutate(delez = round(n/sum(n) * 100,2))
 mesec.produkti <- rename(mesec.produkti, "stevilo" = "n")
 
 
@@ -207,8 +222,8 @@ graf4 <- ggplot(mesec.produkti, aes(x=mesec, y=stevilo, group=produkt, colour=pr
                                                          "investicijski", "izobraževalni", "osebni", "startup", "študentski"))
 #print(graf4)
 
-graf4.1 <- ggplot(mes.del.prod, aes(mesec)) +
-  geom_bar(aes(fill=produkt), position = "fill") +
+graf4.1 <- ggplot(mesec.produkti, aes(x=mesec, y=delez, fill=produkt)) +
+  geom_col(position=position_dodge(width = 0.9)) +
   ggtitle("Delež posameznega produkta znotraj posameznega meseca") + xlab("mesec") + ylab("delež")
 #print(graf4.1)
 
@@ -217,7 +232,9 @@ mesec.produkti.skupaj <- mesec.produkti %>% summarise(vseh = sum(stevilo))
 graf4.2 <- ggplot(mesec.produkti.skupaj, aes(x=mesec, y=vseh, group=1)) + 
   geom_smooth() + geom_point() + ggtitle("Število vseh produktov po mesecih") +
   ylab("število")
+# conf int je 0.95
 #print(graf4.2)
+
 paste("Največ produktov je bilo", mesec.produkti.skupaj[[which.max(mesec.produkti.skupaj$vseh),1]], "in sicer", 
       max(mesec.produkti.skupaj$vseh), "najmanj pa", mesec.produkti.skupaj[[which.min(mesec.produkti.skupaj$vseh),1]],
       "in sicer", min(mesec.produkti.skupaj$vseh))                   
@@ -234,6 +251,7 @@ graf4.3 <- graf4.2 + geom_line(aes(y=mesec.povp, colour="Povprečje")) +
   scale_colour_manual("", breaks = c("Povprečje", "Mediana"),
                       values = c("Povprečje"="red", "Mediana"="green"))
 #print(graf4.3)
+# conf int je 0.95
 
 
 mes.del.tip$mesec <- factor(mes.del.tip$mesec, levels=one.year)
@@ -258,7 +276,7 @@ regija <- subset(podatki, select = c(produkt, mesec, tip, regija, poslovalnica))
 graf5 <- ggplot(regija, aes(y=produkt, fill = regija)) +
   geom_bar(position = position_dodge(width = 0.9)) + coord_flip() +
   ggtitle("Število posameznih produktov v posamezni regiji") + 
-  xlab("število")
+  xlab("število") + theme(axis.text.x=element_text(angle=45, hjust=1))
 #print(graf5)
 
 
@@ -343,7 +361,7 @@ posl.mesec$mesec <- factor(posl.mesec$mesec, levels = one.year)
 
 graf6.1 <- ggplot(posl.mesec, aes(x=mesec, y=st_poslov, group=poslovalnica, colour=poslovalnica)) + 
   geom_line() + geom_point() + ggtitle("Število poslov v posamezni posovalnici po mesecih") +
-  ylab("število")
+  ylab("število") 
 #print(graf6.1)
 
 posl.mesec.skupni <- posl.mesec %>% group_by(mesec) %>% summarise(skupaj = sum(st_poslov))
@@ -357,13 +375,13 @@ graf6.2 <- ggplot(posl.mesec.skupni, aes(x=mesec, y=skupaj, group=1)) +
 graf6.3 <- ggplot(regija, aes(y=poslovalnica, fill = produkt)) +
   geom_bar(position = position_dodge(width = 0.9)) + coord_flip() +
   ggtitle("Število posameznih produktov v posamezni poslovalnici") + 
-  xlab("število")
+  xlab("število") 
 #print(graf6.3)
 
 graf6.3.2 <- ggplot(regija, aes(y=produkt, fill = poslovalnica)) +
   geom_bar(position = position_dodge(width = 0.9)) + coord_flip() +
   ggtitle("Število posameznih produktov v posamezni poslovalnici") + 
-  xlab("število")
+  xlab("število") + theme(axis.text.x=element_text(angle=45, hjust=1))
 #print(graf6.3.2)
 
 graf6.4 <- ggplot(regija, aes(y=poslovalnica, fill = tip)) +
@@ -400,18 +418,26 @@ graf7.1 <- ggplot(znesek.prod.povp, aes(x = produkt, y=povpr_prod, fill = produk
            ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na produkt") + scale_fill_brewer("Accent")
 #print(graf7.1)
 
-graf7.1.2 <- ggplot(znesek, aes(x= produkt, y=znesek, fill = produkt)) + 
+graf7.1.1 <- ggplot(znesek, aes(x= produkt, y=znesek, fill = produkt)) + 
              geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
              stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
              ggtitle("Graf kvantilov zneskov po produktih") + 
-             theme(legend.position="none")
+             theme(axis.text.x=element_text(angle=45, hjust=1))
+#print(graf7.1.1)
+
+graf7.1.2 <- ggplot(znesek, aes(x= produkt, y=znesek, fill = produkt)) + 
+             geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
+             stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+             ggtitle("Graf kvantilov zneskov po produktih do vključno 500 d.e.") + ylim(c(0,500)) +
+             theme(axis.text.x=element_text(angle=45, hjust=1))
 #print(graf7.1.2)
 
 znesek.mesec.povp <- znesek %>% group_by(mesec) %>% summarise(povpr_prod = mean(znesek))
 graf7.2 <- ggplot(znesek.mesec.povp, aes(x=mesec, y=povpr_prod, group=1)) + 
-  geom_smooth() + geom_point() + ggtitle("Povprečen znesek po mesecih") +
-  ylab("popvrečen znesek")
+  geom_smooth() + geom_point() + geom_line() + 
+  ggtitle("Povprečen znesek po mesecih") +  ylab("popvrečen znesek")
 #print(graf7.2)
+#conf int = 0.95
 
 graf7.2.2 <- graf7.2 + geom_line(aes(y=mean(povpr_prod), colour="Povprečje")) + 
   geom_line(aes(y=median(povpr_prod), colour = "Mediana")) +
@@ -425,41 +451,71 @@ graf7.2.3 <- ggplot(znesek, aes(x= mesec, y=znesek, fill = mesec)) +
              ggtitle("Graf kvantilov zneskov po mesecih")
 #print(graf7.2.3)
 
+graf7.2.4 <- ggplot(znesek, aes(x= mesec, y=znesek, fill = mesec)) + 
+             geom_boxplot(outlier.color = "blue") +
+             stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+             ggtitle("Graf kvantilov zneskov do 400 po mesecih") + ylim(c(0,400))
+#print(graf7.2.4)
 
-znesek.tip.povp <- znesek %>% group_by(tip) %>% summarise(povpr_prod = mean(znesek))
+
+znesek.tip.povp <- znesek %>% group_by(tip) %>% summarise(povpr_prod = round(mean(znesek),2))
 
 graf7.3 <- ggplot(znesek.tip.povp, aes(x = tip, y=povpr_prod, fill = tip)) + geom_col() + 
+  geom_label(aes(x=tip, y = povpr_prod + 4, label = povpr_prod), 
+             position = position_dodge(width = 1), show.legend = FALSE) +
   ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na tip")
 #print(graf7.3)
+
+graf7.3.1 <- ggplot(znesek, aes(x= tip, y=znesek, fill = tip)) + 
+  geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("Graf kvantilov zneskov po tipih")
+#print(graf7.3.1)
 
 graf7.3.2 <- ggplot(znesek, aes(x= tip, y=znesek, fill = tip)) + 
   geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
-  ggtitle("Graf kvantilov zneskov po tipih")
+  ggtitle("Graf kvantilov zneskov do vključno 400 po tipih") + ylim(c(0,400))
 #print(graf7.3.2)
 
 
-znesek.regija.povp <- znesek %>% group_by(regija) %>% summarise(povpr_prod = mean(znesek))
+znesek.regija.povp <- znesek %>% group_by(regija) %>% summarise(povpr_prod = round(mean(znesek),2))
 
 graf7.4 <- ggplot(znesek.regija.povp, aes(x = regija, y=povpr_prod, fill = regija)) + geom_col() + 
+  geom_label(aes(x=regija, y = povpr_prod + 4, label = povpr_prod), 
+             position = position_dodge(width = 1), show.legend = FALSE) +
   ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na regijo")
 #print(graf7.4)
+
+graf7.4.1 <- ggplot(znesek, aes(x= regija, y=znesek, fill = regija)) + 
+  geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("Graf kvantilov zneskov po regijah")
+#print(graf7.4.1)
 
 graf7.4.2 <- ggplot(znesek, aes(x= regija, y=znesek, fill = regija)) + 
   geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
-  ggtitle("Graf kvantilov zneskov po regijah")
+  ggtitle("Graf kvantilov zneskov do vključno 400 po regijah") + ylim(c(0,400))
 #print(graf7.4.2)
 
 
-znesek.posl.povp <- znesek %>% group_by(poslovalnica) %>% summarise(povpr_prod = mean(znesek))
+znesek.posl.povp <- znesek %>% group_by(poslovalnica) %>% summarise(povpr_prod = round(mean(znesek),2))
 graf7.5 <- ggplot(znesek.posl.povp, aes(x = poslovalnica, y=povpr_prod, fill = poslovalnica)) + geom_col() + 
+  geom_label(aes(x=poslovalnica, y = povpr_prod + 5, label = povpr_prod), 
+             position = position_dodge(width = 1), show.legend = FALSE) +
   ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na poslovalnico")
 #print(graf7.5)
+
+graf7.5.1 <- ggplot(znesek, aes(x= poslovalnica, y=znesek, fill = poslovalnica)) + 
+  geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
+  ggtitle("Graf kvantilov zneskov po poslovalnicah")
+#print(graf7.5.1)
 
 graf7.5.2 <- ggplot(znesek, aes(x= poslovalnica, y=znesek, fill = poslovalnica)) + 
   geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
-  ggtitle("Graf kvantilov zneskov po poslovalnicah")
+  ggtitle("Graf kvantilov zneskov do vključno 400 po poslovalnicah") + ylim(c(0,400))
 #print(graf7.5.2)
 

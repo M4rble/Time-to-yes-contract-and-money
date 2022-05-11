@@ -14,13 +14,13 @@ graf8.1 <- ggplot(podatki, aes(x= produkt, y=TTY, fill = produkt)) +
   ggtitle("TTY") + ylab("Čas (v dnevih)") +
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
   scale_fill_manual(labels = c("avtomobilski", "hipotekarni", "investicijski", "izobraževalni", "osebni", "startup", "študentski"),
-                    values = palette("Dark2")) + scale_y_continuous(limits = c(a,b))
+                    values = palette("Dark2"))
 #print(graf8.1)
 
-graf8.1.2 <- graf8.1 + geom_line(aes(y=mean(TTY), group=TTY, colour="Povprečje vseh"), lwd=1.3) + 
-  geom_line(aes(y=median(TTY), group=TTY, colour = "Mediana vseh"), lwd = 1) +
+graf8.1.2 <- graf8.1 + geom_line(aes(y=mean(TTY), group=TTY, colour="Povprečje vseh"), lwd=0.8, lty=3) + 
+  geom_line(aes(y=median(TTY), group=TTY, colour = "Mediana vseh"), lwd = 0.8, lty=3) +
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
-                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+                      values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))
 #print(graf8.1.2)
 
 
@@ -30,13 +30,13 @@ graf8.2 <- ggplot(podatki, aes(x= produkt, y=TTC, fill = produkt)) +
   ggtitle("TTC") + ylab("Čas (v dnevih)") +
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
   scale_fill_manual(labels = c("avtomobilski", "hipotekarni", "investicijski", "izobraževalni", "osebni", "startup", "študentski"),
-                    values = palette("Dark2"))  + scale_y_continuous(limits = c(a,b))
+                    values = palette("Dark2"))
 #print(graf8.2)
 
-graf8.2.2 <- graf8.2 + geom_line(aes(y=mean(TTC), group=TTC, colour="Povprečje vseh"), lwd=1.3) + 
-  geom_line(aes(y=median(TTC), group=TTC, colour = "Mediana vseh"), lwd = 1) +
+graf8.2.2 <- graf8.2 + geom_line(aes(y=mean(TTC), group=TTC, colour="Povprečje vseh"), lwd=0.8, lty=3) + 
+  geom_line(aes(y=median(TTC), group=TTC, colour = "Mediana vseh"), lwd = 0.8, lty=3) +
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
-                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+                      values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))
 #print(graf8.2.2)
 
 
@@ -46,13 +46,13 @@ graf8.2.3 <- ggplot(podatki, aes(x=produkt, y=TTC-TTY, fill = produkt)) +
   ggtitle("TTC - TTY") + ylab("Čas (v dnevih)") +
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
   scale_fill_manual(labels = c("avtomobilski", "hipotekarni", "investicijski", "izobraževalni", "osebni", "startup", "študentski"),
-                    values = palette("Dark2"))  + scale_y_continuous(limits = c(a,b))
+                    values = palette("Dark2"))
 #print(graf8.2.3)
 
-graf8.2.4 <- graf8.2.3 + geom_line(aes(y=mean(TTC - TTY), group=TTC, colour="Povprečje vseh"), lwd=1.3) + 
-  geom_line(aes(y=median(TTC-TTY), group=TTC, colour = "Mediana vseh"), lwd = 1) +
+graf8.2.4 <- graf8.2.3 + geom_line(aes(y=mean(TTC - TTY), group=TTC, colour="Povprečje vseh"), lwd=0.8, lty=3) + 
+  geom_line(aes(y=median(TTC-TTY), group=TTC, colour = "Mediana vseh"), lwd=0.8, lty=3) +
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
-                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+                      values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))
 #print(graf8.2.4)
 
 graf8.3 <- ggplot(podatki, aes(x= produkt, y=TTM, fill = produkt)) + 
@@ -61,13 +61,13 @@ graf8.3 <- ggplot(podatki, aes(x= produkt, y=TTM, fill = produkt)) +
   ggtitle("TTM") + ylab("Čas (v dnevih)") +
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
   scale_fill_manual(labels = c("avtomobilski", "hipotekarni", "investicijski", "izobraževalni", "osebni", "startup", "študentski"),
-                    values = palette("Dark2"))  + scale_y_continuous(limits = c(a,b))
+                    values = palette("Dark2"))
 #print(graf8.3)
 
-graf8.3.2 <- graf8.3 + geom_line(aes(y=mean(TTM), group=TTM, colour="Povprečje vseh"), lwd=1.3) + 
-  geom_line(aes(y=median(TTM), group=TTM, colour = "Mediana vseh"), lwd = 1) +
+graf8.3.2 <- graf8.3 + geom_line(aes(y=mean(TTM), group=TTM, colour="Povprečje vseh"), lwd=0.8, lty=3) + 
+  geom_line(aes(y=median(TTM), group=TTM, colour = "Mediana vseh"), lwd=0.8, lty=3) +
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
-                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+                      values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))
 #print(graf8.3.2)
 
 graf8.3.3 <- ggplot(podatki, aes(x=produkt, y=TTM-TTC, fill = produkt)) + 
@@ -76,24 +76,41 @@ graf8.3.3 <- ggplot(podatki, aes(x=produkt, y=TTM-TTC, fill = produkt)) +
   ggtitle("TTM - TTC") + ylab("Čas (v dnevih)") +
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) + 
   scale_fill_manual(labels = c("avtomobilski", "hipotekarni", "investicijski", "izobraževalni", "osebni", "startup", "študentski"),
-                    values = palette("Dark2"))  + scale_y_continuous(limits = c(a,b))
+                    values = palette("Dark2"))
 #print(graf8.3.3)
 
-graf8.3.4 <- graf8.3.3 + geom_line(aes(y=mean(TTM - TTC), group=TTM, colour="Povprečje vseh"), lwd=1.3) + 
-  geom_line(aes(y=median(TTM-TTY), group=TTM, colour = "Mediana vseh"), lwd = 1) +
+graf8.3.4 <- graf8.3.3 + geom_line(aes(y=mean(TTM - TTC), group=TTM, colour="Povprečje vseh"), lwd=0.8, lty=3) + 
+  geom_line(aes(y=median(TTM-TTC), group=TTM, colour = "Mediana vseh"), lwd=0.8, lty=3) +
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
-                      values = c("Povprečje vseh"="green", "Mediana vseh"="black"))
+                      values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))
 #print(graf8.3.4)
 
-casi.produkt <- ggarrange(graf8.1.2, graf8.2.2, graf8.3.2, ncol=3, nrow=1, common.legend = TRUE, legend = "bottom")
-casi.produkt <- annotate_figure(casi.produkt, top = text_grob("Grafi kvantilov časov po produktih", 
-                                                            color = "blue", face = "bold", size = 14))
-#print(casi.produkt)
+casi.produkt <- podatki %>% select(TTY,TTC,TTM,produkt)
+casi.produkt <- casi.produkt %>%  pivot_longer(!produkt, names_to="TTi", values_to = "cas")
+casi.produkt <- within(casi.produkt, TTi <- factor(TTi, levels=c("TTY", "TTC", "TTM")) )
 
-casi.produkt.rac <- ggarrange(graf8.1.2, graf8.2.4, graf8.3.4, ncol=3, nrow=1, common.legend = TRUE, legend = "bottom")
-casi.produkt.rac <- annotate_figure(casi.produkt.rac, top = text_grob("Grafi kvantilov časov racionaliziranih glede na TTY po produktih", 
-                                                              color = "blue", face = "bold", size = 14))
-#print(casi.produkt.rac)
+casi.produkt.plt <- ggplot(casi.produkt, aes(x=produkt, y=cas, fill=produkt)) + facet_wrap(vars(TTi)) +
+  geom_boxplot(outlier.colour = "blue") + 
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") + 
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
+  ggtitle("Grafi kvantilov časov po produktih") + ylab("Čas (v dnevih)") +
+  scale_fill_manual(labels = c("avtomobilski", "hipotekarni", "investicijski", "izobraževalni", "osebni", "startup", "študentski"),
+                    values = palette("Dark2"))
+#print(casi.produkt.plt)
+
+casi.produkt.rac <- podatki %>% summarise(produkt, TTY, TTC-TTY, TTM-TTC)
+casi.produkt.rac <- casi.produkt.rac %>% pivot_longer(!produkt, names_to = "TTi", values_to = "cas")
+casi.produkt.rac <- within(casi.produkt.rac, TTi <- factor(TTi, levels = c("TTY", "TTC - TTY", "TTM - TTC")))
+
+casi.produkt.rac.plt <- ggplot(casi.produkt.rac, aes(x=produkt, y=cas, fill=produkt)) + 
+  facet_wrap(vars(TTi)) +  geom_boxplot(outlier.colour = "blue") + 
+  stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") + 
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
+  ggtitle("Grafi kvantilov časov po produktih") + ylab("Čas (v dnevih)") +
+  scale_fill_manual(labels = c("avtomobilski", "hipotekarni", "investicijski", "izobraževalni", "osebni", "startup", "študentski"),
+                    values = palette("Dark2"))
+#print(casi.produkt.rac.plt)
+
 
 
 # times vs mesec
@@ -436,9 +453,9 @@ casi.poslovalnica.rac <- annotate_figure(casi.poslovalnica.rac, top = text_grob(
 
 
 # korelacije times - znesek
-graf13.1 <- ggplot(podatki, aes(x=TTY, y=znesek)) + geom_point() + 
-           ggtitle("Korelacija med TTY in zneskom")
-#print(graf13.1)
+graf13.1 <- ggplot(podatki, aes(x=TTY, y=znesek, col=poslovalnica)) + geom_point() + geom_smooth() +
+           ggtitle("Korelacija med TTY in zneskom") + facet_wrap(~produkt)
+print(graf13.1)
 graf13.2 <- ggplot(podatki, aes(x=TTC, y=znesek)) + geom_point() +
            ggtitle("Korelacija med TTC in zneskom")
 #print(graf13.2)
