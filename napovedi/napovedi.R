@@ -12,7 +12,7 @@
 
 
 # - scaling (done)
-# - sin cos meseci (done)
+# - sin cos meseci - positional encoding (done)
 # - st_poslov (done) in povpr_znesek po času (done)
 # - log(časi)
 # - učenje po mesecih do avg in test na sep - dec
@@ -24,8 +24,8 @@ podatki2 <- podatki
 podatki2$mesec <- gsub("Maj", "May", podatki2$mesec)
 podatki2$mesec_num <- match(podatki2$mesec, month.abb)
 mesec_sincos <- podatki2 %>% select(-mesec) %>% 
-  summarise(mesec_num, mesec_sin = format(round(sin((podatki2$mesec_num-1)*(2.*pi/12)),6), scientific = FALSE),
-            mesec_cos = format(round(cos((podatki2$mesec_num-1)*(2.*pi/12)),6), scientific = FALSE))
+  summarise(mesec_num, mesec_sin = format(round(sin((podatki2$mesec_num-1)*(2*pi/12)),6), scientific = FALSE),
+            mesec_cos = format(round(cos((podatki2$mesec_num-1)*(2*pi/12)),6), scientific = FALSE))
 
 # st_poslov in skupni_znesek po mesecih
 podatki3 <- cbind(podatki, mesec_sincos)
@@ -48,6 +48,10 @@ podatki.ml$poslovalnica <- as.numeric(podatki.ml$poslovalnica)
 podatki.ml$mesec_sin <- as.numeric(podatki.ml$mesec_sin)
 podatki.ml$mesec_cos <- as.numeric(podatki.ml$mesec_cos)
 
+id <- seq(1,nrow(podatki.ml))
+podatki.ml <- cbind(id, podatki.ml)
+
+
 # scaling
 podatki.ml.scaled <- podatki.ml %>%  mutate_at(-c(1,3,4), funs(c(scale(.))))
 
@@ -56,45 +60,10 @@ podatki.TTY <- podatki.ml %>% select(-c(TTC,TTM))
 podatki.TTY.sc <- podatki.ml.scaled %>% select(-c(TTC,TTM))
 
 
-# Koliko oseb jemlje kredite v več različnih poslovalnicah
-unique(podatki.TTY$ID)
-podatki.TTY %>% filter(ID == 34)
-id.posl <- podatki.TTY %>% select(ID, poslovalnica)
-unikatni <- as.data.frame(table(unique(id.posl)$ID))
-id.posl.2 <- unikatni %>% filter(Freq > 1)
-id.posl.2$Var1 <- as.numeric(as.character(id.posl.2$Var1))
-id.vec.posl.df <- podatki.TTY %>% group_by(ID) %>% 
-  summarise(contains = ID %in% id.posl.2$Var1, poslovalnica) %>% filter(contains == TRUE) %>% 
-  select(-contains)
-
-
-podatki %>% filter(TTY == 0, tip == "Sprememba")
-podatki %>% filter(TTY == 0, tip != "Sprememba")
-
-podatki %>% filter(TTC == 0, tip == "Sprememba")
-podatki %>% filter(TTC == 0, tip != "Sprememba")
-
-podatki %>% filter(TTM == 0, tip == "Sprememba")
-podatki %>% filter(TTM == 0, tip != "Sprememba")
-
-podatki %>% filter(TTM == 0)
-
-podatki %>% filter(TTC < TTY)
-podatki %>% filter(TTM < TTY)
-
-
-
-# korelacijska matrika
-cor_TTY <- round(cor(podatki.TTY),2)
-cor_TTY2 <- rcorr(as.matrix(podatki.TTY))
-#print(cor_TTY2)
-symnum(cor_TTY)
-cor.TTY.plt <- corrplot(cor_TTY, type = "upper", order = "hclust", 
-         tl.col = "black", tl.srt = 45)
-print(cor.TTY.plt)
 
 
 # prečno preverjanje in učenje
+library(lme4)
 
 napaka.cv <- function(podatki_vsi, podatki_id, formula, k){
   set.seed(42)
@@ -109,7 +78,11 @@ napaka.cv <- function(podatki_vsi, podatki_id, formula, k){
   # zdaj imamo dane indekse za vsakega od k-tih delov
   
   pp.napovedi <- rep(0, nrow(podatki_vsi))
-  pp.napovedi2 <- rep(0, length(r))
+  pp.napovedi2 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi3 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi4 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi5 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi6 <- rep(0, nrow(podatki_vsi))
   
   # prečno preverjanje
   for (i in 1:length(razbitje)){
@@ -128,40 +101,112 @@ napaka.cv <- function(podatki_vsi, podatki_id, formula, k){
     
     # naučimo model
     #mod.RF <- randomForest(TTY ~ ., data = train.data, mtry = 3, importance = TRUE, na.action = na.omit)
-    mod.L <- lm(data = train.data[,-c(1,17,21)], formula = formula)
-    mod.L2 <- lm(data = train.data.2[,-c(1,17,21)], formula = formula)
-    #mod.lmer <- lmer(data = trian.data, formula = formula)
-    #mod.glm <- glm()
+    mod.L <- lm(data = train.data[,-c(1,2)], formula = formula)
+    mod.L2 <- lm(data = train.data.2[,-c(1,2)], formula = formula)
+    #mod.lmer <- lmer(data = train.data[,-c(1,2)], formula = formula)
+    #mod.lmer2 <- lmer(data = train.data.2[,-c(1,2)], formula = formula)
+    #mod.glm <- glm(data = train.data[,-c(1,2)], formula = formula)
+    #mod.glm2 <- glm(data = train.data.2[,-c(1,2)], formula = formula)
     # napovemo za testne podatke
-    napovedi <- predict(mod.L, newdata = test.data[,-c(1,5)])
-    napovedi2 <- predict(mod.L2, newdata = test.data.2[,-c(1,5)])
-    pp.napovedi[ razbitje[[i]] ] <- napovedi
-    pp.napovedi2[ razbitje[[i]] ] <- napovedi2
+    napovedi <- predict(mod.L, newdata = test.data[,-c(1,2)])
+    napovedi2 <- predict(mod.L2, newdata = test.data.2[,-c(1,2)])
+    #napovedi3 <- predict(mod.lmer, newdata = test.data[,-c(1,2)])
+    #napovedi4 <- predict(mod.lmer2, newdata = test.data.2[,-c(1,2)])
+    #napovedi5 <- predict(mod.glm, newdata = test.data[,-c(1,2)])
+    #napovedi6 <- predict(mod.glm2, newdata = test.data.2[,-c(1,2)])
+    
+    pp.napovedi[ test.data$id ] <- napovedi
+    pp.napovedi2[ test.data.2$id ] <- napovedi2
+    #pp.napovedi3[ test.data$id ] <- napovedi3
+    #pp.napovedi4[ test.data.2$id ] <- napovedi4
+    #pp.napovedi5[ test.data$id ] <- napovedi5
+    #pp.napovedi6[ test.data.2$id ] <- napovedi6
+    
   }
 # izračunamo MSE
+nenule1 <- which(pp.napovedi2 != 0)
+pp.napovedi2 <- pp.napovedi2[nenule1]
+
+#nenule2 <- which(pp.napovedi4 != 0)
+#pp.napovedi4 <- pp.napovedi4[nenule2]
+#
+#nenule3 <- which(pp.napovedi6 != 0)
+#pp.napovedi6 <- pp.napovedi6[nenule3]
+  
 napaka = mean((pp.napovedi - podatki_vsi$TTY) ^ 2)
-napaka2 = mean((pp.napovedi2 - podatki_vsi$TTY) ^ 2)
-izvoz <- list("napaka 1" = napaka, "napaka 2" = napaka2, "napovedi 1" = pp.napovedi, "napovedi 2" = pp.napovedi2)
+napaka2 = mean((pp.napovedi2 - podatki.TTY[id %in% nenule1]$TTY) ^ 2)
+#napaka3 = mean((pp.napovedi3 - podatki_vsi$TTY) ^ 2)
+#napaka4 = mean((pp.napovedi4 - podatki.TTY[id %in% nenule2]$TTY) ^ 2)
+#napaka5 = mean((pp.napovedi5 - podatki_vsi$TTY) ^ 2)
+#napaka6 = mean((pp.napovedi6 - podatki.TTY[id %in% nenule3]$TTY) ^ 2)
+
+izvoz <- list("napaka 1" = napaka, "napaka 2" = napaka2)
+#, "napaka 3" = napaka3,
+#              "napaka 4" = napaka4, "napaka 5" = napaka5, "napaka 6" = napaka6)
 return(izvoz)
 }
 
-lin.mod <- napaka.cv(podatki.TTY, podatki.TTY$ID, formula=TTY~., 10)
-# neka napaka, meče vn NA/0, kjer nebi smele bit ??
-lin.mod$`napovedi 2`
 
 
-mod.L <- lm(data = train.data[,-c(1,17,21)], formula = TTY~.)
+mod.L <- lm(data = train.data[,-c(1,2,18,22)], formula = TTY~.)
 summary(mod.L)
 cor(train.data[,-c(1,17,21)])
 alias(mod.L)
-napovedi <- predict(mod.L, newdata = test.data[,-c(1,5)])
+napovedi <- predict(mod.L, newdata = test.data[,-c(1,2,6)])
 # ugotovimo, da sta stolpca produkt_študentski in tip_Spremembra popolnoma korelirana - ju odstranimo iz modela
 
-mod.L2 <- lm(data = train.data.2[,-c(1,17,21)], formula = TTY~.)
+mod.L2 <- lm(data = train.data.2[,-c(1,2,18,22)], formula = TTY~.)
 summary(mod.L2)
-cor(train.data.2[,-c(1,17,21)])
+cor(train.data.2[,-c(1,2,18,22)])
 alias(mod.L2)
 # enako za drugi data set
+
+
+
+# iskanje najboljšega modela po obeh pristopih
+# najprej vključimo vse generirane spremenljivke
+lin.mod.vsi <- napaka.cv(podatki.TTY[,-c(18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.vsi$`napaka 1`
+lin.mod.vsi$`napaka 2`
+
+#nobene od novo generiranih spremenljivk
+lin.mod.nobene <- napaka.cv(podatki.TTY[,-c(9,10,11,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.nobene$`napaka 1`
+lin.mod.nobene$`napaka 2`
+paste("Če ne vključimo nobene nove spremenljivke, je napaka manjša.")
+
+#samo eno
+lin.mod.eno1 <- napaka.cv(podatki.TTY[,-c(10,11,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.eno1$`napaka 1`
+lin.mod.eno1$`napaka 2`
+paste("Če samo st_poslov je napaka večja")
+
+lin.mod.eno2 <- napaka.cv(podatki.TTY[,-c(9,11,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.eno2$`napaka 1`
+lin.mod.eno2$`napaka 2`
+paste("Če samo skupni znesek je napaka večja")
+
+lin.mod.eno3 <- napaka.cv(podatki.TTY[,-c(9,10,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.eno3$`napaka 1`
+lin.mod.eno3$`napaka 2`
+paste("Če samo povprečni znesek je napaka najmanjša do zdaj")
+
+#po dve
+lin.mod.dve1 <- napaka.cv(podatki.TTY[,-c(11,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.dve1$`napaka 1`
+lin.mod.dve1$`napaka 2`
+
+lin.mod.dve2 <- napaka.cv(podatki.TTY[,-c(10,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.dve2$`napaka 1`
+lin.mod.dve2$`napaka 2`
+
+lin.mod.dve3 <- napaka.cv(podatki.TTY[,-c(9,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.dve3$`napaka 1`
+lin.mod.dve3$`napaka 2`
+
+paste("Katerekoli dve vklkučimo je napaka večja.")
+paste("Pri linearni regresiji z lm in modelom TTY glede na vse spremenljivke, je najbolje če od dodatnih vključimo samo povprečni znesek.")
+
 
 
 
@@ -223,38 +268,46 @@ test.data.2$ID %in% train.data.2$ID
 
 length(unique(train.data.2$ID)) == 1038 - length(unique(test.data.2$ID))
 
+#========================================================================
+
+# Koliko oseb jemlje kredite v več različnih poslovalnicah
+unique(podatki.TTY$ID)
+podatki.TTY %>% filter(ID == 34)
+id.posl <- podatki.TTY %>% select(ID, poslovalnica)
+unikatni <- as.data.frame(table(unique(id.posl)$ID))
+id.posl.2 <- unikatni %>% filter(Freq > 1)
+id.posl.2$Var1 <- as.numeric(as.character(id.posl.2$Var1))
+id.vec.posl.df <- podatki.TTY %>% group_by(ID) %>% 
+  summarise(contains = ID %in% id.posl.2$Var1, poslovalnica) %>% filter(contains == TRUE) %>% 
+  select(-contains)
 
 
-#funkcija deli točne napovedi z vsoto vseh napovedi = točnost napovedi
-accuracy <- function(x)
-{sum(diag(x)/(sum(rowSums(x)))) * 100
-}
+podatki %>% filter(TTY == 0, tip == "Sprememba")
+podatki %>% filter(TTY == 0, tip != "Sprememba")
+
+podatki %>% filter(TTC == 0, tip == "Sprememba")
+podatki %>% filter(TTC == 0, tip != "Sprememba")
+
+podatki %>% filter(TTM == 0, tip == "Sprememba")
+podatki %>% filter(TTM == 0, tip != "Sprememba")
+
+podatki %>% filter(TTM == 0)
+
+podatki %>% filter(TTC < TTY)
+podatki %>% filter(TTM < TTY)
 
 
-# RANDOM FOREST
 
-TTY.RF <- randomForest(TTY ~ ., data = train.data, mtry = 3,
-                       importance = TRUE, na.action = na.omit)
-TTY.RF
-plot(TTY.RF)
+# korelacijska matrika
+cor_TTY <- round(cor(podatki.TTY),2)
+cor_TTY2 <- rcorr(as.matrix(podatki.TTY))
+#print(cor_TTY2)
+symnum(cor_TTY)
+cor.TTY.plt <- corrplot(cor_TTY, type = "upper", order = "hclust", 
+                        tl.col = "black", tl.srt = 45)
+print(cor.TTY.plt)
 
-# Predicting the Test set results
-y_pred = predict(TTY.RF, newdata = test.data[,-4])
 
-
-confusion_mtx = table(test.data$TTY, y_pred)
-
-accuracy(confusion_mtx2)
-
-napaka = mean((y_pred2 - test.data$TTY) ^ 2)
-napaka
-
-df.napak <- data.frame(cbind(test.data$TTY, round(y_pred2,4)))
-df.napak <- rename(df.napak, c("podatek" = "X1", "napoved"="X2"))
-df.napak <- df.napak %>% summarise(podatek, napoved,
-                                   abs_napaka = as.numeric(format(round(abs(y_pred2 - test.data$TTY),4), scientific=FALSE)),
-                                   kv_napaka = as.numeric(format(round((y_pred2 - test.data$TTY) ^ 2,4), scientific=FALSE)))
-colMeans(df.napak)
 
 
 
