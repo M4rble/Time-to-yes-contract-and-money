@@ -585,19 +585,40 @@ graf13.3.2 <- ggplot(podatki, aes(x=TTM-TTC, y=znesek)) + geom_point() +
   ggtitle("Korelacija med TTM-TTC in zneskom")
 #print(graf13.3.2)
 
-# korelacija times - poslovalnica
 
-graf14.1 <- ggplot(podatki, aes(x=poslovalnica, y=mean(TTY))) + geom_col() + 
-  ggtitle("Korelacija med TTY in poslovalnico")
+# iskanje korelacij, med ostalimi atributi, ki bi vplivale na čase
+
+#produkt-tip-znesek
+graf14.1 <- ggplot(podatki, aes(x=TTY, y=znesek, col=tip)) + geom_point() + geom_smooth() +
+  ggtitle("Korelacija med TTY, zneskom in tipom po produktih") + facet_wrap(~produkt)
 #print(graf14.1)
-# povprečje glede na število obdelanih znsekov?
-poslovalnica.avg <- podatki %>% group_by(poslovalnica) %>% summarise(povprecje_TTY = mean(TTY))
 
-# avtokorelacija itd - ne deluje zares, ker ni časovna vrsta
-#acf(podatki$TTY)
-#pacf(podatki$TTY)
-#ccf(podatki$TTY, podatki$znesek)
+#poslovalnica-regija-znesek
+graf14.2 <- ggplot(podatki, aes(x=TTY, y=znesek, col=poslovalnica)) + geom_point() + geom_smooth() +
+  ggtitle("Korelacija med TTY, zneskom in poslovalnico po regijah") + facet_wrap(~regija)
+#print(graf14.2)
 
+#mesec-poslovalnica-znesek
+graf14.3 <- ggplot(podatki, aes(x=TTY, y=znesek, col=poslovalnica)) + geom_point() + geom_smooth() +
+  ggtitle("Korelacija med TTY, zneskom in poslovalnico po mesecih") + facet_wrap(~mesec)
+#print(graf14.3)
+
+#produkt-regija-znesek
+graf14.4 <- ggplot(podatki, aes(x=TTY, y=znesek, col=produkt)) + geom_point() + geom_smooth() +
+  ggtitle("Korelacija med TTY, zneskom in produktom po regijah") + facet_wrap(~regija)
+#print(graf14.4)
+
+#produkt-poslovalnica-znesek
+graf14.5 <- ggplot(podatki, aes(x=TTY, y=znesek, col=produkt)) + geom_point() + geom_smooth() +
+  ggtitle("Korelacija med TTY, zneskom in produktom po poslovalnicah") + facet_wrap(~poslovalnica)
+#print(graf14.5)
+
+#produkt-tip-regija
+graf14.6 <- ggplot(podatki, aes(x=produkt, y=TTY, col=tip)) + geom_point() + geom_smooth() +
+  ggtitle("Korelacija med produktom, TTY in tipi po regijah") + facet_wrap(~regija)
+#print(graf14.6)
+
+#Ni NEKIH OČITNIH KORELACIJ :/
 
 # povprečni na mesec
 mesec.times <- podatki %>% select(mesec, TTY, TTC, TTM)

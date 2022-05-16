@@ -65,7 +65,7 @@ podatki.TTY.sc <- podatki.ml.scaled %>% select(-c(TTC,TTM))
 # prečno preverjanje in učenje
 library(lme4)
 
-napaka.cv <- function(podatki_vsi, podatki_id, formula, k){
+napaka.cv.tty <- function(podatki_vsi, podatki_id, formula, k){
   set.seed(42)
   # za k-kratno prečno preverjanje najprej podatke razdelimo na k enako velikih delov
 
@@ -83,6 +83,9 @@ napaka.cv <- function(podatki_vsi, podatki_id, formula, k){
   pp.napovedi4 <- rep(0, nrow(podatki_vsi))
   pp.napovedi5 <- rep(0, nrow(podatki_vsi))
   pp.napovedi6 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi7 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi8 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi9 <- rep(0, nrow(podatki_vsi))
   
   # prečno preverjanje
   for (i in 1:length(razbitje)){
@@ -103,46 +106,91 @@ napaka.cv <- function(podatki_vsi, podatki_id, formula, k){
     #mod.RF <- randomForest(TTY ~ ., data = train.data, mtry = 3, importance = TRUE, na.action = na.omit)
     mod.L <- lm(data = train.data[,-c(1,2)], formula = formula)
     mod.L2 <- lm(data = train.data.2[,-c(1,2)], formula = formula)
-    #mod.lmer <- lmer(data = train.data[,-c(1,2)], formula = formula)
-    #mod.lmer2 <- lmer(data = train.data.2[,-c(1,2)], formula = formula)
-    #mod.glm <- glm(data = train.data[,-c(1,2)], formula = formula)
-    #mod.glm2 <- glm(data = train.data.2[,-c(1,2)], formula = formula)
+    mod.L3 <- lm(data = train.data[,-c(1,2)], 
+                 formula = log(TTY+1)~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                 produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                 produkt_izobraževalni + produkt_osebni + produkt_startup +  povpr_znesek +
+                 tip_Novo + tip_Obnova + tip_Podaljšanje)
+    mod.lmer <- lmer(data = train.data[,-c(1,2)], 
+                formula = TTY~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                produkt_izobraževalni + produkt_osebni + produkt_startup +  povpr_znesek +
+                tip_Novo + tip_Obnova + tip_Podaljšanje + (znesek | regija))
+    mod.lmer2 <- lmer(data = train.data.2[,-c(1,2)],
+                 formula = TTY~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                 produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                 produkt_izobraževalni + produkt_osebni + produkt_startup +  povpr_znesek +
+                 tip_Novo + tip_Obnova + tip_Podaljšanje + (znesek | regija))
+    mod.glm <- glm(data = train.data[,-c(1,2)], 
+                   formula = TTY~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                   produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                   produkt_izobraževalni + produkt_osebni + produkt_startup + povpr_znesek +
+                   tip_Novo + tip_Obnova + tip_Podaljšanje + znesek:regija)
+    mod.glm.log <- glm(data = train.data[,-c(1,2)], 
+                   formula = TTY+1~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                   produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                   produkt_izobraževalni + produkt_osebni + produkt_startup + povpr_znesek + 
+                   tip_Novo + tip_Obnova + tip_Podaljšanje, family = "gaussian"(link= "log"))
+    mod.glm2 <- glm(data = train.data.2[,-c(1,2)],
+                    formula = TTY~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                    produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                    produkt_izobraževalni + produkt_osebni + produkt_startup +  povpr_znesek +
+                    tip_Novo + tip_Obnova + tip_Podaljšanje + znesek:regija)
+    mod.glm.log2 <- glm(data = train.data.2[,-c(1,2)], 
+                   formula = TTY+1~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                   produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                   produkt_izobraževalni + produkt_osebni + produkt_startup + povpr_znesek +
+                   tip_Novo + tip_Obnova + tip_Podaljšanje, family = "gaussian"(link= "log"))
+    
     # napovemo za testne podatke
     napovedi <- predict(mod.L, newdata = test.data[,-c(1,2)])
     napovedi2 <- predict(mod.L2, newdata = test.data.2[,-c(1,2)])
-    #napovedi3 <- predict(mod.lmer, newdata = test.data[,-c(1,2)])
-    #napovedi4 <- predict(mod.lmer2, newdata = test.data.2[,-c(1,2)])
-    #napovedi5 <- predict(mod.glm, newdata = test.data[,-c(1,2)])
-    #napovedi6 <- predict(mod.glm2, newdata = test.data.2[,-c(1,2)])
+    napovedi3 <- predict(mod.L3, newdata = test.data[,-c(1,2)])
+    napovedi4 <- predict(mod.lmer, newdata = test.data[,-c(1,2)])
+    napovedi5 <- predict(mod.lmer2, newdata = test.data.2[,-c(1,2)])
+    napovedi6 <- predict(mod.glm, newdata = test.data[,-c(1,2)])
+    napovedi7 <- predict(mod.glm.log, newdata = test.data[,-c(1,2)])
+    napovedi8 <- predict(mod.glm2, newdata = test.data.2[,-c(1,2)])
+    napovedi9 <- predict(mod.glm.log2, newdata = test.data.2[,-c(1,2)])
     
     pp.napovedi[ test.data$id ] <- napovedi
     pp.napovedi2[ test.data.2$id ] <- napovedi2
-    #pp.napovedi3[ test.data$id ] <- napovedi3
-    #pp.napovedi4[ test.data.2$id ] <- napovedi4
-    #pp.napovedi5[ test.data$id ] <- napovedi5
-    #pp.napovedi6[ test.data.2$id ] <- napovedi6
+    pp.napovedi3[test.data$id] <- exp(napovedi3)-1
+    pp.napovedi4[ test.data$id ] <- napovedi4
+    pp.napovedi5[ test.data.2$id ] <- napovedi5
+    pp.napovedi6[ test.data$id ] <- napovedi6
+    pp.napovedi7[ test.data$id ] <- exp(napovedi7)-1
+    pp.napovedi8[ test.data.2$id ] <- napovedi8
+    pp.napovedi9[ test.data.2$id ] <- exp(napovedi9)-1
     
   }
 # izračunamo MSE
 nenule1 <- which(pp.napovedi2 != 0)
 pp.napovedi2 <- pp.napovedi2[nenule1]
 
-#nenule2 <- which(pp.napovedi4 != 0)
-#pp.napovedi4 <- pp.napovedi4[nenule2]
-#
-#nenule3 <- which(pp.napovedi6 != 0)
-#pp.napovedi6 <- pp.napovedi6[nenule3]
+nenule2 <- which(pp.napovedi5 != 0)
+pp.napovedi5 <- pp.napovedi5[nenule2]
+
+nenule3 <- which(pp.napovedi8 != 0)
+pp.napovedi8 <- pp.napovedi8[nenule3]
+
+nenule4 <- which(pp.napovedi9 != 0)
+pp.napovedi9 <- pp.napovedi9[nenule4]
   
 napaka = mean((pp.napovedi - podatki_vsi$TTY) ^ 2)
 napaka2 = mean((pp.napovedi2 - podatki.TTY[id %in% nenule1]$TTY) ^ 2)
-#napaka3 = mean((pp.napovedi3 - podatki_vsi$TTY) ^ 2)
-#napaka4 = mean((pp.napovedi4 - podatki.TTY[id %in% nenule2]$TTY) ^ 2)
-#napaka5 = mean((pp.napovedi5 - podatki_vsi$TTY) ^ 2)
-#napaka6 = mean((pp.napovedi6 - podatki.TTY[id %in% nenule3]$TTY) ^ 2)
+napaka3 = mean((pp.napovedi3 - podatki_vsi$TTY) ^ 2)
+napaka4 = mean((pp.napovedi4 - podatki_vsi$TTY) ^ 2)
+napaka5 = mean((pp.napovedi5 - podatki.TTY[id %in% nenule2]$TTY) ^ 2)
+napaka6 = mean((pp.napovedi6 - podatki_vsi$TTY) ^ 2)
+napaka7 = mean((pp.napovedi7 - podatki_vsi$TTY) ^ 2)
+napaka8 = mean((pp.napovedi8 - podatki.TTY[id %in% nenule3]$TTY) ^ 2)
+napaka9 = mean((pp.napovedi9 - podatki.TTY[id %in% nenule4]$TTY) ^ 2)
 
-izvoz <- list("napaka 1" = napaka, "napaka 2" = napaka2)
-#, "napaka 3" = napaka3,
-#              "napaka 4" = napaka4, "napaka 5" = napaka5, "napaka 6" = napaka6)
+izvoz <- list("napaka.lm" = napaka, "napaka.lm2" = napaka2, "napaka.lm.log" = napaka3, 
+              "napaka.lmer" = napaka4, "napaka.lmer2" = napaka5, "napaka.glm" = napaka6,
+              "napaka.glm.log" = napaka7, "napaka.glm2" = napaka8, "napaka.glm.log2" = napaka9)
+
 return(izvoz)
 }
 
@@ -161,18 +209,53 @@ cor(train.data.2[,-c(1,2,18,22)])
 alias(mod.L2)
 # enako za drugi data set
 
+mod.lmer <- lmer(data = train.data[,-c(1,2)], 
+                 formula = TTY~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                   produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                   produkt_izobraževalni + produkt_osebni + produkt_startup + 
+                   tip_Novo + tip_Obnova + tip_Podaljšanje + (0 + poslovalnica | regija))
+summary(mod.lmer)
+
+mod.lmer2 <- lmer(data = train.data[,-c(1,2)], 
+                 formula = TTY~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                   produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                   produkt_izobraževalni + produkt_osebni + produkt_startup + 
+                   tip_Novo + tip_Obnova + tip_Podaljšanje + (regija | znesek))
+summary(mod.lmer2)
+
+mod.glm.log <- glm(data = train.data[,-c(1,2)], 
+                   formula = TTY+1~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                     produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                     produkt_izobraževalni + produkt_osebni + produkt_startup + povpr_znesek + 
+                     tip_Novo + tip_Obnova + tip_Podaljšanje, family = "gaussian"(link= "log"))
+summary(mod.glm.log)
 
 
 # iskanje najboljšega modela po obeh pristopih
 # najprej vključimo vse generirane spremenljivke
 lin.mod.vsi <- napaka.cv(podatki.TTY[,-c(18,22)], podatki.TTY$ID, formula=TTY~., 10)
-lin.mod.vsi$`napaka 1`
-lin.mod.vsi$`napaka 2`
+lin.mod.vsi$napaka.lm
+lin.mod.vsi$napaka.lm2
+lin.mod.vsi$napaka.lm.log
+lin.mod.vsi$napaka.lmer
+lin.mod.vsi$napaka.lmer2
+lin.mod.vsi$napaka.glm
+lin.mod.vsi$napaka.glm.log
+lin.mod.vsi$napaka.glm2
+lin.mod.vsi$napaka.glm.log2
+
 
 #nobene od novo generiranih spremenljivk
 lin.mod.nobene <- napaka.cv(podatki.TTY[,-c(9,10,11,18,22)], podatki.TTY$ID, formula=TTY~., 10)
-lin.mod.nobene$`napaka 1`
-lin.mod.nobene$`napaka 2`
+lin.mod.nobene$napaka.lm
+lin.mod.nobene$napaka.lm2
+lin.mod.nobene$napaka.lm.log
+lin.mod.nobene$napaka.lmer
+lin.mod.nobene$napaka.lmer2
+lin.mod.nobene$napaka.glm
+lin.mod.nobene$napaka.glm.log
+lin.mod.nobene$napaka.glm2
+lin.mod.nobene$napaka.glm.log2
 paste("Če ne vključimo nobene nove spremenljivke, je napaka manjša.")
 
 #samo eno
@@ -187,8 +270,15 @@ lin.mod.eno2$`napaka 2`
 paste("Če samo skupni znesek je napaka večja")
 
 lin.mod.eno3 <- napaka.cv(podatki.TTY[,-c(9,10,18,22)], podatki.TTY$ID, formula=TTY~., 10)
-lin.mod.eno3$`napaka 1`
-lin.mod.eno3$`napaka 2`
+lin.mod.eno3$napaka.lm
+lin.mod.eno3$napaka.lm2
+lin.mod.eno3$napaka.lm.log
+lin.mod.eno3$napaka.lmer
+lin.mod.eno3$napaka.lmer2
+lin.mod.eno3$napaka.glm
+lin.mod.eno3$napaka.glm.log
+lin.mod.eno3$napaka.glm2
+lin.mod.eno3$napaka.glm.log2
 paste("Če samo povprečni znesek je napaka najmanjša do zdaj")
 
 #po dve
@@ -208,6 +298,7 @@ paste("Katerekoli dve vklkučimo je napaka večja.")
 paste("Pri linearni regresiji z lm in modelom TTY glede na vse spremenljivke, je najbolje če od dodatnih vključimo samo povprečni znesek.")
 
 
+paste("Izgleda, kot da je najboljši model za TTY mod.glm.log z vključeno dodatno spremenljivko povpr_znesek.")
 
 
 # 1. PRISTOP - krediti znotraj istega id-ja so neodvisni
@@ -321,7 +412,8 @@ print(cor.TTY.plt)
 #=============================
 
 
-
+# TTC
+#====================================
 
 podatki.TTC <- podatki.ml %>% select(-c(TTY,TTM))
 # korelacijska matrika
@@ -333,7 +425,238 @@ corrplot(cor_TTC, type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45)
 
 
-podatki.TTM <- podatki.ml %>% select(-c(TTC,TTY))
+mod.L.ttc <- lm(data = podatki.TTC[,-c(1,2,18,22)], formula = TTC~.)
+summary(mod.L.ttc)
+alias(mod.L.ttc)
+# ugotovimo, da sta stolpca produkt_študentski in tip_Spremembra popolnoma korelirana - ju odstranimo iz modela
+
+
+mod.lmer.ttc <- lmer(data = podatki.TTC[,-c(1,2)], 
+                  formula = TTC~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                    produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                    produkt_izobraževalni + produkt_osebni + produkt_startup + 
+                    tip_Novo + tip_Obnova + tip_Podaljšanje + (regija | znesek))
+summary(mod.lmer.ttc)
+
+mod.glm.log.ttc <- glm(data = podatki.TTC[,-c(1,2)], 
+                   formula = TTC+1~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                     produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                     produkt_izobraževalni + produkt_osebni + produkt_startup + povpr_znesek + 
+                     tip_Novo + tip_Obnova + tip_Podaljšanje, family = "gaussian"(link= "log"))
+summary(mod.glm.log.ttc)
+
+
+napaka.cv.ttc <- function(podatki_vsi, podatki_id, formula, k){
+  set.seed(42)
+  # za k-kratno prečno preverjanje najprej podatke razdelimo na k enako velikih delov
+  
+  # najprej naključno premešamo id-je
+  r <- unique(sample(podatki_id))
+  # razrežemo na k intervalov
+  razrez <- cut(seq_along(r), k, labels = FALSE)
+  # Razbijemo vektor na k seznamov na osnovi razreza intervalov
+  razbitje <- split(r, razrez)
+  # zdaj imamo dane indekse za vsakega od k-tih delov
+  
+  pp.napovedi <- rep(0, nrow(podatki_vsi))
+  pp.napovedi2 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi3 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi4 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi5 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi6 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi7 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi8 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi9 <- rep(0, nrow(podatki_vsi))
+  
+  # prečno preverjanje
+  for (i in 1:length(razbitje)){
+    # učni podatki krediti neodvisni
+    data <- podatki_vsi %>% mutate(contains = ID %in% razbitje[[i]])
+    train.data <- data %>% filter(contains == FALSE) %>% select(-contains)
+    # testni podatki krediti neodvisni
+    test.data <- data %>% filter(contains == TRUE) %>% select(-contains)
+    
+    # učni podatki 1 id v 1 trainu
+    train.data.2 <- data %>% group_by(ID) %>% sample_n(1) %>% 
+      filter(contains == FALSE) %>% select(-contains)
+    # testni podatki 1 id v 1 testu
+    test.data.2 <- data %>% group_by(ID) %>% sample_n(1) %>%
+      filter(contains == TRUE) %>% select(-contains)
+    
+    # naučimo model
+    #mod.RF <- randomForest(TTY ~ ., data = train.data, mtry = 3, importance = TRUE, na.action = na.omit)
+    mod.L <- lm(data = train.data[,-c(1,2)], formula = formula)
+    mod.L2 <- lm(data = train.data.2[,-c(1,2)], formula = formula)
+    mod.L3 <- lm(data = train.data[,-c(1,2)], 
+                 formula = log(TTC+1)~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                   produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                   produkt_izobraževalni + produkt_osebni + produkt_startup +  povpr_znesek +
+                   tip_Novo + tip_Obnova + tip_Podaljšanje)
+    mod.lmer <- lmer(data = train.data[,-c(1,2)], 
+                     formula = TTC~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                       produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                       produkt_izobraževalni + produkt_osebni + produkt_startup +  povpr_znesek +
+                       tip_Novo + tip_Obnova + tip_Podaljšanje + (znesek | regija))
+    mod.lmer2 <- lmer(data = train.data.2[,-c(1,2)],
+                      formula = TTC~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                        produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                        produkt_izobraževalni + produkt_osebni + produkt_startup +  povpr_znesek +
+                        tip_Novo + tip_Obnova + tip_Podaljšanje + (znesek | regija))
+    mod.glm <- glm(data = train.data[,-c(1,2)], 
+                   formula = TTC~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                     produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                     produkt_izobraževalni + produkt_osebni + produkt_startup + povpr_znesek +
+                     tip_Novo + tip_Obnova + tip_Podaljšanje + znesek:regija)
+    mod.glm.log <- glm(data = train.data[,-c(1,2)], 
+                       formula = TTC+1~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                         produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                         produkt_izobraževalni + produkt_osebni + produkt_startup + povpr_znesek + 
+                         tip_Novo + tip_Obnova + tip_Podaljšanje, family = "gaussian"(link= "log"))
+    mod.glm2 <- glm(data = train.data.2[,-c(1,2)],
+                    formula = TTC~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                      produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                      produkt_izobraževalni + produkt_osebni + produkt_startup +  povpr_znesek +
+                      tip_Novo + tip_Obnova + tip_Podaljšanje + znesek:regija)
+    mod.glm.log2 <- glm(data = train.data.2[,-c(1,2)], 
+                        formula = TTC+1~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                          produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                          produkt_izobraževalni + produkt_osebni + produkt_startup + povpr_znesek +
+                          tip_Novo + tip_Obnova + tip_Podaljšanje, family = "gaussian"(link= "log"))
+    
+    # napovemo za testne podatke
+    napovedi <- predict(mod.L, newdata = test.data[,-c(1,2)])
+    napovedi2 <- predict(mod.L2, newdata = test.data.2[,-c(1,2)])
+    napovedi3 <- predict(mod.L3, newdata = test.data[,-c(1,2)])
+    napovedi4 <- predict(mod.lmer, newdata = test.data[,-c(1,2)])
+    napovedi5 <- predict(mod.lmer2, newdata = test.data.2[,-c(1,2)])
+    napovedi6 <- predict(mod.glm, newdata = test.data[,-c(1,2)])
+    napovedi7 <- predict(mod.glm.log, newdata = test.data[,-c(1,2)])
+    napovedi8 <- predict(mod.glm2, newdata = test.data.2[,-c(1,2)])
+    napovedi9 <- predict(mod.glm.log2, newdata = test.data.2[,-c(1,2)])
+    
+    pp.napovedi[ test.data$id ] <- napovedi
+    pp.napovedi2[ test.data.2$id ] <- napovedi2
+    pp.napovedi3[test.data$id] <- exp(napovedi3)-1
+    pp.napovedi4[ test.data$id ] <- napovedi4
+    pp.napovedi5[ test.data.2$id ] <- napovedi5
+    pp.napovedi6[ test.data$id ] <- napovedi6
+    pp.napovedi7[ test.data$id ] <- exp(napovedi7)-1
+    pp.napovedi8[ test.data.2$id ] <- napovedi8
+    pp.napovedi9[ test.data.2$id ] <- exp(napovedi9)-1
+    
+  }
+  # izračunamo MSE
+  nenule1 <- which(pp.napovedi2 != 0)
+  pp.napovedi2 <- pp.napovedi2[nenule1]
+  
+  nenule2 <- which(pp.napovedi5 != 0)
+  pp.napovedi5 <- pp.napovedi5[nenule2]
+  
+  nenule3 <- which(pp.napovedi8 != 0)
+  pp.napovedi8 <- pp.napovedi8[nenule3]
+  
+  nenule4 <- which(pp.napovedi9 != 0)
+  pp.napovedi9 <- pp.napovedi9[nenule4]
+  
+  napaka = mean((pp.napovedi - podatki_vsi$TTC) ^ 2)
+  napaka2 = mean((pp.napovedi2 - podatki.TTC[id %in% nenule1]$TTC) ^ 2)
+  napaka3 = mean((pp.napovedi3 - podatki_vsi$TTC) ^ 2)
+  napaka4 = mean((pp.napovedi4 - podatki_vsi$TTC) ^ 2)
+  napaka5 = mean((pp.napovedi5 - podatki.TTC[id %in% nenule2]$TTC) ^ 2)
+  napaka6 = mean((pp.napovedi6 - podatki_vsi$TTC) ^ 2)
+  napaka7 = mean((pp.napovedi7 - podatki_vsi$TTC) ^ 2)
+  napaka8 = mean((pp.napovedi8 - podatki.TTC[id %in% nenule3]$TTC) ^ 2)
+  napaka9 = mean((pp.napovedi9 - podatki.TTC[id %in% nenule4]$TTC) ^ 2)
+  
+  izvoz <- list("napaka.lm" = napaka, "napaka.lm2" = napaka2, "napaka.lm.log" = napaka3, 
+                "napaka.lmer" = napaka4, "napaka.lmer2" = napaka5, "napaka.glm" = napaka6,
+                "napaka.glm.log" = napaka7, "napaka.glm2" = napaka8, "napaka.glm.log2" = napaka9)
+  
+  return(izvoz)
+}
+
+
+
+
+
+# iskanje najboljšega modela po obeh pristopih
+# najprej vključimo vse generirane spremenljivke
+ttc.lin.mod.vsi <- napaka.cv.ttc(podatki.TTC[,-c(18,22)], podatki.TTC$ID, formula=TTC~., 10)
+ttc.lin.mod.vsi$napaka.lm
+ttc.lin.mod.vsi$napaka.lm2
+ttc.lin.mod.vsi$napaka.lm.log
+ttc.lin.mod.vsi$napaka.lmer
+ttc.lin.mod.vsi$napaka.lmer2
+ttc.lin.mod.vsi$napaka.glm
+ttc.lin.mod.vsi$napaka.glm.log
+ttc.lin.mod.vsi$napaka.glm2
+ttc.lin.mod.vsi$napaka.glm.log2
+
+
+#nobene od novo generiranih spremenljivk
+ttc.lin.mod.nobene <- napaka.cv.ttc(podatki.TTC[,-c(9,10,11,18,22)], podatki.TTC$ID, formula=TTC~., 10)
+ttc.lin.mod.nobene$napaka.lm
+ttc.lin.mod.nobene$napaka.lm2
+ttc.lin.mod.nobene$napaka.lm.log
+ttc.lin.mod.nobene$napaka.lmer
+ttc.lin.mod.nobene$napaka.lmer2
+ttc.lin.mod.nobene$napaka.glm
+ttc.lin.mod.nobene$napaka.glm.log
+ttc.lin.mod.nobene$napaka.glm2
+ttc.lin.mod.nobene$napaka.glm.log2
+paste("Če ne vključimo nobene nove spremenljivke, je napaka manjša.")
+
+#samo eno
+ttc.lin.mod.eno1 <- napaka.cv.ttc(podatki.TTC[,-c(10,11,18,22)], podatki.TTC$ID, formula=TTC~., 10)
+ttc.lin.mod.eno1$`napaka 1`
+ttc.lin.mod.eno1$`napaka 2`
+paste("Če samo st_poslov je napaka večja")
+
+ttc.lin.mod.eno2 <- napaka.cv.ttc(podatki.TTC[,-c(9,11,18,22)], podatki.TTC$ID, formula=TTC~., 10)
+ttc.lin.mod.eno2$`napaka 1`
+ttc.lin.mod.eno2$`napaka 2`
+paste("Če samo skupni znesek je napaka večja")
+
+ttc.lin.mod.eno3 <- napaka.cv.ttc(podatki.TTC[,-c(9,10,18,22)], podatki.TTC$ID, formula=TTC~., 10)
+ttc.lin.mod.eno3$napaka.lm
+ttc.lin.mod.eno3$napaka.lm2
+ttc.lin.mod.eno3$napaka.lm.log
+ttc.lin.mod.eno3$napaka.lmer
+ttc.lin.mod.eno3$napaka.lmer2
+ttc.lin.mod.eno3$napaka.glm
+ttc.lin.mod.eno3$napaka.glm.log
+ttc.lin.mod.eno3$napaka.glm2
+ttc.lin.mod.eno3$napaka.glm.log2
+paste("Če samo povprečni znesek je napaka večja")
+
+#po dve
+ttc.lin.mod.dve1 <- napaka.cv.ttc(podatki.TTC[,-c(11,18,22)], podatki.TTC$ID, formula=TTC~., 10)
+ttc.lin.mod.dve1$`napaka 1`
+ttc.lin.mod.dve1$`napaka 2`
+
+ttc.lin.mod.dve2 <- napaka.cv.ttc(podatki.TTC[,-c(10,18,22)], podatki.TTC$ID, formula=TTC~., 10)
+ttc.lin.mod.dve2$`napaka 1`
+ttc.lin.mod.dve2$`napaka 2`
+
+ttc.lin.mod.dve3 <- napaka.cv.ttc(podatki.TTC[,-c(9,18,22)], podatki.TTC$ID, formula=TTC~., 10)
+ttc.lin.mod.dve3$`napaka 1`
+ttc.lin.mod.dve3$`napaka 2`
+
+paste("Katerekoli dve vklkučimo je napaka večja.")
+paste("Pri linearni regresiji z lm in modelom TTY glede na vse spremenljivke, je najbolje ne vključimo nobene dodatne spremenljivke.")
+
+
+paste("Izgleda, kot da je najboljši model za TTY mod.glm.log brez vključenih dodatnih spremenljivk.")
+
+
+
+
+
+
+# TTM
+#====================================
+
+podatki.TTM <- podatki.ml %>% select(-c(TTY,TTC))
 # korelacijska matrika
 cor_TTM <- round(cor(podatki.TTM),2)
 cor_TTM2 <- rcorr(as.matrix(podatki.TTM))
@@ -341,4 +664,230 @@ cor_TTM2 <- rcorr(as.matrix(podatki.TTM))
 symnum(cor_TTM)
 corrplot(cor_TTM, type = "upper", order = "hclust", 
          tl.col = "black", tl.srt = 45)
+
+
+mod.L.ttm <- lm(data = podatki.TTM[,-c(1,2,18,22)], formula = TTM~.)
+summary(mod.L.ttm)
+alias(mod.L.ttm)
+# ugotovimo, da sta stolpca produkt_študentski in tip_Spremembra popolnoma korelirana - ju odstranimo iz modela
+
+
+mod.lmer.ttm <- lmer(data = podatki.TTM[,-c(1,2)], 
+                     formula = TTM~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                       produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                       produkt_izobraževalni + produkt_osebni + produkt_startup + 
+                       tip_Novo + tip_Obnova + tip_Podaljšanje + (regija | znesek))
+summary(mod.lmer.ttm)
+
+mod.glm.log.ttm <- glm(data = podatki.TTM[,-c(1,2)], 
+                       formula = TTM+1~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                         produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                         produkt_izobraževalni + produkt_osebni + produkt_startup + povpr_znesek + 
+                         tip_Novo + tip_Obnova + tip_Podaljšanje, family = "gaussian"(link= "log"))
+summary(mod.glm.log.ttm)
+
+
+napaka.cv.ttm <- function(podatki_vsi, podatki_id, formula, k){
+  set.seed(42)
+  # za k-kratno prečno preverjanje najprej podatke razdelimo na k enako velikih delov
+  
+  # najprej naključno premešamo id-je
+  r <- unique(sample(podatki_id))
+  # razrežemo na k intervalov
+  razrez <- cut(seq_along(r), k, labels = FALSE)
+  # Razbijemo vektor na k seznamov na osnovi razreza intervalov
+  razbitje <- split(r, razrez)
+  # zdaj imamo dane indekse za vsakega od k-tih delov
+  
+  pp.napovedi <- rep(0, nrow(podatki_vsi))
+  pp.napovedi2 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi3 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi4 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi5 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi6 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi7 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi8 <- rep(0, nrow(podatki_vsi))
+  pp.napovedi9 <- rep(0, nrow(podatki_vsi))
+  
+  # prečno preverjanje
+  for (i in 1:length(razbitje)){
+    # učni podatki krediti neodvisni
+    data <- podatki_vsi %>% mutate(contains = ID %in% razbitje[[i]])
+    train.data <- data %>% filter(contains == FALSE) %>% select(-contains)
+    # testni podatki krediti neodvisni
+    test.data <- data %>% filter(contains == TRUE) %>% select(-contains)
+    
+    # učni podatki 1 id v 1 trainu
+    train.data.2 <- data %>% group_by(ID) %>% sample_n(1) %>% 
+      filter(contains == FALSE) %>% select(-contains)
+    # testni podatki 1 id v 1 testu
+    test.data.2 <- data %>% group_by(ID) %>% sample_n(1) %>%
+      filter(contains == TRUE) %>% select(-contains)
+    
+    # naučimo model
+    #mod.RF <- randomForest(TTY ~ ., data = train.data, mtry = 3, importance = TRUE, na.action = na.omit)
+    mod.L <- lm(data = train.data[,-c(1,2)], formula = formula)
+    mod.L2 <- lm(data = train.data.2[,-c(1,2)], formula = formula)
+    mod.L3 <- lm(data = train.data[,-c(1,2)], 
+                 formula = log(TTM)~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                   produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                   produkt_izobraževalni + produkt_osebni + produkt_startup +  
+                   tip_Novo + tip_Obnova + tip_Podaljšanje)
+    mod.lmer <- lmer(data = train.data[,-c(1,2)], 
+                     formula = TTM~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                       produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                       produkt_izobraževalni + produkt_osebni + produkt_startup +  
+                       tip_Novo + tip_Obnova + tip_Podaljšanje + (znesek | regija))
+    mod.lmer2 <- lmer(data = train.data.2[,-c(1,2)],
+                      formula = TTM~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                        produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                        produkt_izobraževalni + produkt_osebni + produkt_startup + 
+                        tip_Novo + tip_Obnova + tip_Podaljšanje + (znesek | regija))
+    mod.glm <- glm(data = train.data[,-c(1,2)], 
+                   formula = TTM~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                     produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                     produkt_izobraževalni + produkt_osebni + produkt_startup + 
+                     tip_Novo + tip_Obnova + tip_Podaljšanje + znesek:regija)
+    mod.glm.log <- glm(data = train.data[,-c(1,2)], 
+                       formula = TTM~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                         produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                         produkt_izobraževalni + produkt_osebni + produkt_startup + 
+                         tip_Novo + tip_Obnova + tip_Podaljšanje, family = "gaussian"(link= "log"))
+    mod.glm2 <- glm(data = train.data.2[,-c(1,2)],
+                    formula = TTM~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                      produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                      produkt_izobraževalni + produkt_osebni + produkt_startup + 
+                      tip_Novo + tip_Obnova + tip_Podaljšanje + znesek:regija)
+    mod.glm.log2 <- glm(data = train.data.2[,-c(1,2)], 
+                        formula = TTM~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                          produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                          produkt_izobraževalni + produkt_osebni + produkt_startup +
+                          tip_Novo + tip_Obnova + tip_Podaljšanje, family = "gaussian"(link= "log"))
+    
+    # napovemo za testne podatke
+    napovedi <- predict(mod.L, newdata = test.data[,-c(1,2)])
+    napovedi2 <- predict(mod.L2, newdata = test.data.2[,-c(1,2)])
+    napovedi3 <- predict(mod.L3, newdata = test.data[,-c(1,2)])
+    napovedi4 <- predict(mod.lmer, newdata = test.data[,-c(1,2)])
+    napovedi5 <- predict(mod.lmer2, newdata = test.data.2[,-c(1,2)])
+    napovedi6 <- predict(mod.glm, newdata = test.data[,-c(1,2)])
+    napovedi7 <- predict(mod.glm.log, newdata = test.data[,-c(1,2)])
+    napovedi8 <- predict(mod.glm2, newdata = test.data.2[,-c(1,2)])
+    napovedi9 <- predict(mod.glm.log2, newdata = test.data.2[,-c(1,2)])
+    
+    pp.napovedi[ test.data$id ] <- napovedi
+    pp.napovedi2[ test.data.2$id ] <- napovedi2
+    pp.napovedi3[test.data$id] <- exp(napovedi3)
+    pp.napovedi4[ test.data$id ] <- napovedi4
+    pp.napovedi5[ test.data.2$id ] <- napovedi5
+    pp.napovedi6[ test.data$id ] <- napovedi6
+    pp.napovedi7[ test.data$id ] <- exp(napovedi7)
+    pp.napovedi8[ test.data.2$id ] <- napovedi8
+    pp.napovedi9[ test.data.2$id ] <- exp(napovedi9)
+    
+  }
+  # izračunamo MSE
+  nenule1 <- which(pp.napovedi2 != 0)
+  pp.napovedi2 <- pp.napovedi2[nenule1]
+  
+  nenule2 <- which(pp.napovedi5 != 0)
+  pp.napovedi5 <- pp.napovedi5[nenule2]
+  
+  nenule3 <- which(pp.napovedi8 != 0)
+  pp.napovedi8 <- pp.napovedi8[nenule3]
+  
+  nenule4 <- which(pp.napovedi9 != 0)
+  pp.napovedi9 <- pp.napovedi9[nenule4]
+  
+  napaka = mean((pp.napovedi - podatki_vsi$TTM) ^ 2)
+  napaka2 = mean((pp.napovedi2 - podatki.TTM[id %in% nenule1]$TTM) ^ 2)
+  napaka3 = mean((pp.napovedi3 - podatki_vsi$TTM) ^ 2)
+  napaka4 = mean((pp.napovedi4 - podatki_vsi$TTM) ^ 2)
+  napaka5 = mean((pp.napovedi5 - podatki.TTM[id %in% nenule2]$TTM) ^ 2)
+  napaka6 = mean((pp.napovedi6 - podatki_vsi$TTM) ^ 2)
+  napaka7 = mean((pp.napovedi7 - podatki_vsi$TTM) ^ 2)
+  napaka8 = mean((pp.napovedi8 - podatki.TTM[id %in% nenule3]$TTM) ^ 2)
+  napaka9 = mean((pp.napovedi9 - podatki.TTM[id %in% nenule4]$TTM) ^ 2)
+  
+  izvoz <- list("napaka.lm" = napaka, "napaka.lm2" = napaka2, "napaka.lm.log" = napaka3, 
+                "napaka.lmer" = napaka4, "napaka.lmer2" = napaka5, "napaka.glm" = napaka6,
+                "napaka.glm.log" = napaka7, "napaka.glm2" = napaka8, "napaka.glm.log2" = napaka9)
+  
+  return(izvoz)
+}
+
+
+
+
+
+# iskanje najboljšega modela po obeh pristopih
+# najprej vključimo vse generirane spremenljivke
+ttm.lin.mod.vsi <- napaka.cv.ttm(podatki.TTM[,-c(18,22)], podatki.TTM$ID, formula=TTM~., 10)
+ttm.lin.mod.vsi$napaka.lm
+ttm.lin.mod.vsi$napaka.lm2
+ttm.lin.mod.vsi$napaka.lm.log
+ttm.lin.mod.vsi$napaka.lmer
+ttm.lin.mod.vsi$napaka.lmer2
+ttm.lin.mod.vsi$napaka.glm
+ttm.lin.mod.vsi$napaka.glm.log
+ttm.lin.mod.vsi$napaka.glm2
+ttm.lin.mod.vsi$napaka.glm.log2
+
+
+#nobene od novo generiranih spremenljivk
+ttm.lin.mod.nobene <- napaka.cv.ttm(podatki.TTM[,-c(9,10,11,18,22)], podatki.TTM$ID, formula=TTM~., 10)
+ttm.lin.mod.nobene$napaka.lm
+ttm.lin.mod.nobene$napaka.lm2
+ttm.lin.mod.nobene$napaka.lm.log
+ttm.lin.mod.nobene$napaka.lmer
+ttm.lin.mod.nobene$napaka.lmer2
+ttm.lin.mod.nobene$napaka.glm
+ttm.lin.mod.nobene$napaka.glm.log
+ttm.lin.mod.nobene$napaka.glm2
+ttm.lin.mod.nobene$napaka.glm.log2
+paste("Če ne vključimo nobene nove spremenljivke, je napaka manjša.")
+
+#samo eno
+ttm.lin.mod.eno1 <- napaka.cv.ttm(podatki.TTM[,-c(10,11,18,22)], podatki.TTM$ID, formula=TTM~., 10)
+ttm.lin.mod.eno1$`napaka 1`
+ttm.lin.mod.eno1$`napaka 2`
+paste("Če samo st_poslov je napaka večja")
+
+ttm.lin.mod.eno2 <- napaka.cv.ttm(podatki.TTM[,-c(9,11,18,22)], podatki.TTM$ID, formula=TTM~., 10)
+ttm.lin.mod.eno2$`napaka 1`
+ttm.lin.mod.eno2$`napaka 2`
+paste("Če samo skupni znesek je napaka večja")
+
+ttm.lin.mod.eno3 <- napaka.cv.ttm(podatki.TTM[,-c(9,10,18,22)], podatki.TTM$ID, formula=TTM~., 10)
+ttm.lin.mod.eno3$napaka.lm
+ttm.lin.mod.eno3$napaka.lm2
+ttm.lin.mod.eno3$napaka.lm.log
+ttm.lin.mod.eno3$napaka.lmer
+ttm.lin.mod.eno3$napaka.lmer2
+ttm.lin.mod.eno3$napaka.glm
+ttm.lin.mod.eno3$napaka.glm.log
+ttm.lin.mod.eno3$napaka.glm2
+ttm.lin.mod.eno3$napaka.glm.log2
+paste("Če samo povprečni znesek je napaka večja")
+
+#po dve
+ttm.lin.mod.dve1 <- napaka.cv.ttm(podatki.TTM[,-c(11,18,22)], podatki.TTM$ID, formula=TTM~., 10)
+ttm.lin.mod.dve1$`napaka 1`
+ttm.lin.mod.dve1$`napaka 2`
+
+ttm.lin.mod.dve2 <- napaka.cv.ttm(podatki.TTM[,-c(10,18,22)], podatki.TTM$ID, formula=TTM~., 10)
+ttm.lin.mod.dve2$`napaka 1`
+ttm.lin.mod.dve2$`napaka 2`
+
+ttm.lin.mod.dve3 <- napaka.cv.ttm(podatki.TTM[,-c(9,18,22)], podatki.TTM$ID, formula=TTM~., 10)
+ttm.lin.mod.dve3$`napaka 1`
+ttm.lin.mod.dve3$`napaka 2`
+
+paste("Katerekoli dve vklkučimo je napaka večja.")
+paste("Pri linearni regresiji z lm in modelom TTY glede na vse spremenljivke, je najbolje ne vključimo nobene dodatne spremenljivke.")
+
+
+paste("Izgleda, kot da je najboljši model za TTY mod.glm.log brez vključenih dodatnih spremenljivk.")
+
+#mogoče bi bilo smiselno gledati modele na TTM-TTC in TTC-TTY ?
 
