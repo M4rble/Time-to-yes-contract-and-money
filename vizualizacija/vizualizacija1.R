@@ -7,7 +7,7 @@ source("~/Faks/mag 1 letnik/MzR/Time-to-yes-contract-and-money/uvoz/uvoz.R", enc
 # PRODUKTI
 # delež v celem letu in po mesecih
 del.produktov <- as.data.frame(prop.table(table(podatki$produkt))*100)
-delez.produktov <- rename(del.produktov, c("produkt" = "Var1", "delez" = "Freq"))
+delez.produktov <- rename(del.produktov, c("produkt" = "Var1", "let_delez" = "Freq"))
 
 graf1 <- ggplot(delez.produktov, aes(x="", y=delez, fill =produkt)) +
   geom_col(width=0.7, position = position_dodge(width = 1)) + 
@@ -36,12 +36,29 @@ graf1.2 <- ggplot(delez.produktov, aes(x=1, y=delez, fill=produkt)) +
 
 mes.del.prod <- subset(podatki, select = c(mesec, produkt))
 mes.delez.produktov <- mes.del.prod %>% group_by(mesec) %>% count(produkt) %>% 
-                        summarise(delez = round(n/sum(n) * 100,2), produkt)
-df.jan <- data.frame("Jan",0,"avtomobilski")
+                        mutate(mes_delez = round(n/sum(n) * 100,2))
+df.jan <- data.frame("Jan",0,"avtomobilski", 0)
 
-names(df.jan) <- c("mesec", "delez", "produkt")
+names(df.jan) <- c("mesec", "n", "produkt", "mes_delez")
 
 mes.delez.produktov <- rbind(mes.delez.produktov, df.jan)
+
+delez.produktov2 <- left_join(delez.produktov, mes.delez.produktov)
+
+
+graf1.3 <- ggplot(delez.produktov2, aes(x="", y=let_delez, fill =produkt)) +
+  geom_col(width=0.7, position = position_dodge(width = 1)) + 
+  geom_label(aes(x="", y = let_delez + 2, label = let_delez), 
+             position = position_dodge(width = 1), show.legend = FALSE) + xlab("") + 
+  ggtitle("Delež posameznih produktov (v odstotkih) v celem letu")
+#print(graf1.3)
+
+graf1.4 <- ggplot(delez.produktov2, aes(x=mesec, y=mes_delez, group=produkt, colour=produkt)) + 
+            geom_line() + geom_point() + ggtitle("Delež posameznih produktov (v odstotkih) po mesecih") +
+            ylab("delež (v %)") + scale_colour_discrete(labels = c("avtomobilski", "hipotekarni",
+                                                         "investicijski", "izobraževalni", "osebni", "startup", "študentski"))
+#print(graf1.4)
+
 
 
 graf2.jan <- mes.delez.produktov %>% filter(mesec == "Jan") %>% 
@@ -154,6 +171,9 @@ prod.po.mes <- annotate_figure(prod.po.mes, top = text_grob("Delež produktov po
 one.year <- c("Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
 mes.delez.produktov.2 <- mes.delez.produktov
 mes.delez.produktov.2$mesec <- factor(mes.delez.produktov.2$mesec, levels=one.year)
+
+delez.produktov2 <- mes.delez.produktov.2 %>% group_by(produkt) %>% mutate(let_delez = sum(delez))
+
 
 prod.po.mes.2 <- ggplot(mes.delez.produktov.2, aes(x=mesec, y=delez, group=produkt, colour=produkt)) + 
                  geom_line() + geom_point() + ggtitle("Delež posameznih produktov (v odstotkih) po mesecih") +

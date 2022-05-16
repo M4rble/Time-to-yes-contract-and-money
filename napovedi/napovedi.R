@@ -4,7 +4,7 @@
 # - ustvarjanje novih atributov
 # - PAZI NA ID! - vsi z istim ID so 1 podatek - dodaj nove stolpce kot recimo število kreditov (in koliko katerih), 0 in 1
 # - učno in testno množico je treba ustrezno razdeliti - VSI z istim ID v eno ali drugo!!
-# - KNN, random forests, lin regression, decision trees, lmer? Probaj vse
+# - KNN, random forests, lin regression, decision trees, lmer, glm? Probaj vse
 
 
 # za osamelce - SVM (metoda podpornih vektorjev - za odkrivanje osamelcev)
@@ -63,7 +63,7 @@ podatki.TTY.sc <- podatki.ml.scaled %>% select(-c(TTC,TTM))
 
 
 # prečno preverjanje in učenje
-library(lme4)
+
 
 napaka.cv.tty <- function(podatki_vsi, podatki_id, formula, k){
   set.seed(42)
@@ -189,7 +189,8 @@ napaka9 = mean((pp.napovedi9 - podatki.TTY[id %in% nenule4]$TTY) ^ 2)
 
 izvoz <- list("napaka.lm" = napaka, "napaka.lm2" = napaka2, "napaka.lm.log" = napaka3, 
               "napaka.lmer" = napaka4, "napaka.lmer2" = napaka5, "napaka.glm" = napaka6,
-              "napaka.glm.log" = napaka7, "napaka.glm2" = napaka8, "napaka.glm.log2" = napaka9)
+              "napaka.glm.log" = napaka7, "napaka.glm2" = napaka8, "napaka.glm.log2" = napaka9,
+              "napoved.glm.log" = pp.napovedi7, "napovedi.lm" = pp.napovedi, "napovedi.lm2" = pp.napovedi2)
 
 return(izvoz)
 }
@@ -233,7 +234,7 @@ summary(mod.glm.log)
 
 # iskanje najboljšega modela po obeh pristopih
 # najprej vključimo vse generirane spremenljivke
-lin.mod.vsi <- napaka.cv(podatki.TTY[,-c(18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.vsi <- napaka.cv.tty(podatki.TTY[,-c(18,22)], podatki.TTY$ID, formula=TTY~., 10)
 lin.mod.vsi$napaka.lm
 lin.mod.vsi$napaka.lm2
 lin.mod.vsi$napaka.lm.log
@@ -246,7 +247,7 @@ lin.mod.vsi$napaka.glm.log2
 
 
 #nobene od novo generiranih spremenljivk
-lin.mod.nobene <- napaka.cv(podatki.TTY[,-c(9,10,11,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.nobene <- napaka.cv.tty(podatki.TTY[,-c(9,10,11,18,22)], podatki.TTY$ID, formula=TTY~., 10)
 lin.mod.nobene$napaka.lm
 lin.mod.nobene$napaka.lm2
 lin.mod.nobene$napaka.lm.log
@@ -259,17 +260,17 @@ lin.mod.nobene$napaka.glm.log2
 paste("Če ne vključimo nobene nove spremenljivke, je napaka manjša.")
 
 #samo eno
-lin.mod.eno1 <- napaka.cv(podatki.TTY[,-c(10,11,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.eno1 <- napaka.cv.tty(podatki.TTY[,-c(10,11,18,22)], podatki.TTY$ID, formula=TTY~., 10)
 lin.mod.eno1$`napaka 1`
 lin.mod.eno1$`napaka 2`
 paste("Če samo st_poslov je napaka večja")
 
-lin.mod.eno2 <- napaka.cv(podatki.TTY[,-c(9,11,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.eno2 <- napaka.cv.tty(podatki.TTY[,-c(9,11,18,22)], podatki.TTY$ID, formula=TTY~., 10)
 lin.mod.eno2$`napaka 1`
 lin.mod.eno2$`napaka 2`
 paste("Če samo skupni znesek je napaka večja")
 
-lin.mod.eno3 <- napaka.cv(podatki.TTY[,-c(9,10,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.eno3 <- napaka.cv.tty(podatki.TTY[,-c(9,10,18,22)], podatki.TTY$ID, formula=TTY~., 10)
 lin.mod.eno3$napaka.lm
 lin.mod.eno3$napaka.lm2
 lin.mod.eno3$napaka.lm.log
@@ -281,16 +282,30 @@ lin.mod.eno3$napaka.glm2
 lin.mod.eno3$napaka.glm.log2
 paste("Če samo povprečni znesek je napaka najmanjša do zdaj")
 
+# še s scalanimi - zgleda izjemno boljše za 1. pristop
+lin.mod.eno3.sc <- napaka.cv.tty(podatki.TTY.sc[,-c(9,10,18,22)], podatki.TTY.sc$ID, formula=TTY~., 10)
+lin.mod.eno3.sc$napaka.lm
+lin.mod.eno3.sc$napaka.lm2
+lin.mod.eno3.sc$napaka.lm.log
+lin.mod.eno3.sc$napaka.lmer
+lin.mod.eno3.sc$napaka.lmer2
+lin.mod.eno3.sc$napaka.glm
+lin.mod.eno3.sc$napaka.glm.log
+lin.mod.eno3.sc$napaka.glm2
+lin.mod.eno3.sc$napaka.glm.log2
+
+# kako dobim unscaled rezultate???
+
 #po dve
-lin.mod.dve1 <- napaka.cv(podatki.TTY[,-c(11,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.dve1 <- napaka.cv.tty(podatki.TTY[,-c(11,18,22)], podatki.TTY$ID, formula=TTY~., 10)
 lin.mod.dve1$`napaka 1`
 lin.mod.dve1$`napaka 2`
 
-lin.mod.dve2 <- napaka.cv(podatki.TTY[,-c(10,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.dve2 <- napaka.cv.tty(podatki.TTY[,-c(10,18,22)], podatki.TTY$ID, formula=TTY~., 10)
 lin.mod.dve2$`napaka 1`
 lin.mod.dve2$`napaka 2`
 
-lin.mod.dve3 <- napaka.cv(podatki.TTY[,-c(9,18,22)], podatki.TTY$ID, formula=TTY~., 10)
+lin.mod.dve3 <- napaka.cv.tty(podatki.TTY[,-c(9,18,22)], podatki.TTY$ID, formula=TTY~., 10)
 lin.mod.dve3$`napaka 1`
 lin.mod.dve3$`napaka 2`
 
