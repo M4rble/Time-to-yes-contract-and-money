@@ -7,7 +7,7 @@ source("~/Faks/mag 1 letnik/MzR/Time-to-yes-contract-and-money/uvoz/uvoz.R", enc
 # PRODUKTI
 # delež v celem letu in po mesecih
 del.produktov <- as.data.frame(prop.table(table(podatki$produkt))*100)
-delez.produktov <- rename(del.produktov, c("produkt" = "Var1", "let_delez" = "Freq"))
+delez.produktov <- rename(del.produktov, c("produkt" = "Var1", "delez" = "Freq"))
 
 graf1 <- ggplot(delez.produktov, aes(x="", y=delez, fill =produkt)) +
   geom_col(width=0.7, position = position_dodge(width = 1)) + 
@@ -19,7 +19,7 @@ graf1 <- ggplot(delez.produktov, aes(x="", y=delez, fill =produkt)) +
 graf1.1 <- ggplot(podatki, aes(y=produkt, fill =produkt)) +
   geom_bar(position = position_dodge(width = 0.9)) + coord_flip() +
   ylab("produkt") + xlab("število") +
-  ggtitle("Število posameznih produktov (v odstotkih) v celem letu") + 
+  ggtitle("Število posameznih produktov v celem letu") + 
   theme(axis.text.x=element_text(angle=45, hjust=1))
 #print(graf1.1)
 
@@ -46,9 +46,9 @@ mes.delez.produktov <- rbind(mes.delez.produktov, df.jan)
 delez.produktov2 <- left_join(delez.produktov, mes.delez.produktov)
 
 
-graf1.3 <- ggplot(delez.produktov2, aes(x="", y=let_delez, fill =produkt)) +
+graf1.3 <- ggplot(delez.produktov2, aes(x="", y=delez, fill =produkt)) +
   geom_col(width=0.7, position = position_dodge(width = 1)) + 
-  geom_label(aes(x="", y = let_delez + 2, label = let_delez), 
+  geom_label(aes(x="", y = delez + 2, label = delez), 
              position = position_dodge(width = 1), show.legend = FALSE) + xlab("") + 
   ggtitle("Delež posameznih produktov (v odstotkih) v celem letu")
 #print(graf1.3)
@@ -59,6 +59,7 @@ graf1.4 <- ggplot(delez.produktov2, aes(x=mesec, y=mes_delez, group=produkt, col
                                                          "investicijski", "izobraževalni", "osebni", "startup", "študentski"))
 #print(graf1.4)
 
+mes.delez.produktov <- rename(mes.delez.produktov, "delez" = "mes_delez")
 
 
 graf2.jan <- mes.delez.produktov %>% filter(mesec == "Jan") %>% 
@@ -448,7 +449,7 @@ graf7.1.1 <- ggplot(znesek, aes(x= produkt, y=znesek, fill = produkt)) +
 graf7.1.2 <- ggplot(znesek, aes(x= produkt, y=znesek, fill = produkt)) + 
              geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
              stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
-             ggtitle("Graf kvantilov zneskov po produktih do vključno 500 d.e.") + ylim(c(0,500)) +
+             ggtitle("Graf kvantilov zneskov po produktih do vključno 400 d.e.") + ylim(c(0,400)) +
              theme(axis.text.x=element_text(angle=45, hjust=1))
 #print(graf7.1.2)
 

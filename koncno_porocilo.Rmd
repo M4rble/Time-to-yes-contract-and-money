@@ -1,0 +1,96 @@
+---
+title: "Končno poročilo"
+author: "Anže Mramor"
+date: "17 5 2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+
+```{r vizualizacija, results='hide'}
+source("~/Faks/mag 1 letnik/MzR/Time-to-yes-contract-and-money/vizualizacija/vizualizacija_pomembni_grafi.R", encoding="UTF-8")
+```
+
+## Analiza medsebojnih povezav podatkov, brez časov
+
+```{r graf1, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf1.1
+graf1.2
+graf1.3
+```
+
+```{r graf3, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf3.1
+graf3.2
+graf3.3
+graf3.4
+```
+
+```{r graf4, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf4.1
+graf4.2
+graf4.3
+```
+
+```{r graf5, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf5.1
+graf5.2
+graf5.3
+graf5.4
+graf5.5
+```
+
+```{r graf6, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf6.1
+graf6.2
+graf6.3
+graf6.4
+```
+
+
+```{r graf7, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf7.1
+graf7.2
+graf7.3
+graf7.3.2
+graf7.4
+graf7.5
+graf7.6
+graf7.7
+graf7.8
+graf7.9
+graf7.10
+graf7.11
+graf7.12
+```
+
+```{r graf8, echo=FALSE, fig.align='side', fig.show="hold", out.width="50%"}
+graf8.1
+graf8.2
+graf8.3
+graf8.4
+graf8.5
+graf8.6
+```
+
+```{r casi, echo=FALSE, fig.align="center"}
+casi.produkt.plt
+casi.produkt.rac.plt
+
+casi.mesec.plt
+casi.mesec.rac.plt
+
+casi.tip.plt
+casi.tip.rac.plt
+
+casi.regija.plt
+casi.regija.rac.plt
+
+casi.poslovalnica.plt
+casi.poslovalnica.rac.plt
+```
