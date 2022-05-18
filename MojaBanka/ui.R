@@ -358,10 +358,34 @@ shinyUI(fluidPage(
                    
                    
                    navbarMenu("Izračunaj svoje čase",
-                              tabPanel("Čas do odobritve", h2("Čas do odobritve")),
-                              tabPanel("Čas do podpisa pogodbe", h2("Čas do podpisa pogodbe")),
-                              tabPanel("Čas do prejema sredstev", h2("Čas do prejema sredstev"))
-                   )
+                              tabPanel("Izračun časov za svoj kredit", h2("Izračun časov za svoj kredit"),
+                                 selectInput("izbira_produkta",
+                                             label = "Izberite želeni produkt",
+                                             choices = c("avtomobilski", "hipotekarni", "investicijski",
+                                                         "izobraževalni", "osebni", "startup", "študentski"),
+                                             multiple = TRUE),
+                                 selectInput("izbira_meseca",
+                                             label = "Izberite mesec, ko boste oddali vlogo",
+                                             choices = c("Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
+                                             multiple = TRUE),
+                                 selectInput("izbira_tipa",
+                                             label = "Izberite tip kredita",
+                                             choices = c("Novo", "Obnova", "Podaljšanje", "Sprememba"),
+                                             multiple = TRUE),
+                                 selectInput("izbira_regije",
+                                             label = "Izberite regijo v kateri boste oddali vlogo",
+                                             choices = c("vzhodna", "zahodna"),
+                                             multiple = TRUE),
+                                 selectInput("izbira_poslovalnice",
+                                             label = "Izberite poslovalnico, v kateri boste oddali vlogo",
+                                             choices = c(1,2,3,4,5,6,7),
+                                             multiple = TRUE),
+                                 numericInput("izbira_zneska",
+                                              label = "Vnesite želeni znesek kredita (med 1 in 750)",
+                                           value="", min=1, max=750),
+                   
+                                 column(8, textOutput("izracunani.casi"))
+                                 ))
                    
                    
         )

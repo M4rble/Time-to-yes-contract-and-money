@@ -890,7 +890,60 @@ shinyServer(function(input, output) {
                 
             }
             
-        }) 
+        })
+        
+        #
+        #napoved <- reactive(
+        #    
+        #    
+        #    znesek <- input$izbira_zneska,
+        #    regija <- switch(input$izbira_regije,
+        #                     "vzhodna" = 1,
+        #                     "zahodna" = 0),
+        #    poslovalnica <- input$izbira_poslovalnice,
+        #    mesec <- match(input$izbira_meseca, month.abb),
+        #    mesec_sin <- format(round(sin((podatki2$mesec-1)*(2*pi/12)),6), scientific = FALSE),
+        #    mesec_cos <- format(round(cos((podatki2$mesec-1)*(2*pi/12)),6), scientific = FALSE),
+        #    povpr_znesek <- input$izbira_zneska,
+        #    produkt_avtomobilski <- if(input$izbira_produkta == "avtomobilski"){1}
+        #                            else{0},
+        #    produkt_hipotekarni <- if(input$izbira_produkta == "hipotekarni"){1}
+        #                            else{0},
+        #    produkt_investicijski <- if(input$izbira_produkta == "investicijski"){1}
+        #                            else{0},
+        #    produkt_izobraževalni <- if(input$izbira_produkta == "izobraževalni"){1}
+        #                            else{0},
+        #    produkt_osebni <- if(input$izbira_produkta == "osebni"){1}
+        #                            else{0},
+        #    produkt_startup <- if(input$izbira_produkta == "startup"){1}
+        #                            else{0},
+        #    produkt_študentski <- if(input$izbira_produkta == "študentski"){1}
+        #                            else{0},
+        #    tip_Novo <- if(input$izbira_tipa == "Novo"){1}
+        #                            else{0},
+        #    tip_Obnova <- if(input$izbira_tipa == "Obnova"){1}
+        #                            else{0},
+        #    tip_Podaljšanje <- if(input$izbira_tipa == "Podaljšanje"){1}
+        #                            else{0},
+        #    tip_Sprememba <- if(input$izbira_tipa == "Sprememba"){1}
+        #                            else{0},
+        #    novi_podatki <- data.frame(znesek, regija, poslovalnica, mesec_sin, mesec_cos, povpr_znesek,
+        #                          produkt_avtomobilski, produkt_hipotekarni, produkt_investicijski,
+        #                          produkt_izobraževalni, produkt_osebni, produkt_startup,
+        #                          tip_Novo, tip_Obnova, tip_Podaljšanje),
+        #    
+        #    
+        #    
+        #    pred.modela <- predict(lin.mod.eno3, novi_podatki),
+        #    napoved <- exp(pred.modela)-1
+        #    
+        #    
+        #    
+        #)
+        
+        output$izracunani.casi <- renderText({
+            "Napovedan čas do odobritve kredita je" 
+        })
         
 })
 
