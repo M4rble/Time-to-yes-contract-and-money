@@ -32,7 +32,7 @@ ui <- fluidPage(
                                                                "Število posameznih po mesecih",
                                                                "Skupno število po mesecih",
                                                                "Delež v letu",
-                                                               "Delež po mesecih")),
+                                                               "Delež po mesecih"))
                                        #checkboxGroupInput("vrednost", "Izberite dodatno vrednost", 
                                        #                          choiceNames =
                                        #                              list(vrednost("povprečje"), vrednost("mediana")),
@@ -41,8 +41,20 @@ ui <- fluidPage(
                                        
                                        # treba dodat še graf z povprečjem in mediano
                                    ),
+                                   #=============================================================
+                                   conditionalPanel(condition="input.lastnost_produkt == 'Skupno število po mesecih' ",
+                                                    
+                                                    fluidRow(column(3,
+                                                           
+                                                   radioButtons("lastnost", "Dodatna lastnost:",
+                                                                      choices = list("navaden", "mediana",
+                                                                                     "povprečje", "vse"),
+                                                                      selected = "navaden"),
+                                                    ))
+                                                   ),
+                                   #=============================================================
                                    
-                                   mainPanel(plotOutput("produkti"))),
+                                   column(10, plotOutput("produkti"))),
                                    
                           tabPanel("Tipi", h2("Tipi"),
                                    
@@ -154,32 +166,59 @@ server <- function(input, output) {
             mutate(delez = round(n/sum(n) * 100,2))
         mesec.produkti <- rename(mesec.produkti, "stevilo" = "n")
         
+        mesec.povp <- mean(mesec.produkti.skupaj$vseh)
+        mesec.med <- median(mesec.produkti.skupaj$vseh)
         
         
-        produkti <- switch(input$lastnost_produkt,
-                        "Skupno število v letu" = ggplot(podatki, aes(y=produkt, fill =produkt)) +
-                            geom_bar(position = position_dodge(width = 0.9)) + coord_flip() +
-                            ylab("produkt") + xlab("število") +
-                            ggtitle("Število posameznih produktov v celem letu") + 
-                            theme(axis.text.x=element_text(angle=45, hjust=1)),
-                        "Število posameznih po mesecih" = ggplot(mesec.produkti, aes(x=mesec, y=stevilo, group=produkt, colour=produkt)) + 
-                            geom_line() + geom_point() + ggtitle("Število posameznih produktov po mesecih") +
-                            ylab("število") + scale_colour_discrete(labels = c("avtomobilski", "hipotekarni",
-                                                                               "investicijski", "izobraževalni", "osebni", "startup", "študentski")),
-                        "Skupno število po mesecih" = ggplot(mesec.produkti.skupaj, aes(x=mesec, y=vseh, group=1)) + 
-                            geom_smooth() + geom_point() + ggtitle("Število vseh produktov po mesecih") +
-                            ylab("število"),
-                        "Delež v letu" = ggplot(delez.produktov2, aes(x="", y=delez, fill =produkt)) +
-                            geom_col(width=0.7, position = position_dodge(width = 1)) + 
-                            geom_label(aes(x="", y = delez + 2, label = delez), 
-                                       position = position_dodge(width = 1), show.legend = FALSE) + xlab("produkt") + ylab("delež (v %)")+
-                            ggtitle("Delež posameznih produktov (v odstotkih) v celem letu"),
-                        "Delež po mesecih" = ggplot(delez.produktov2, aes(x=mesec, y=mes_delez, group=produkt, colour=produkt)) + 
-                            geom_line() + geom_point() + ggtitle("Delež posameznih produktov (v odstotkih) po mesecih") +
-                            ylab("delež (v %)") + scale_colour_discrete(labels = c("avtomobilski", "hipotekarni",
-                                                                                   "investicijski", "izobraževalni", "osebni", "startup", "študentski"))
-        )
-        print(produkti)
+        if(input$lastnost_produkt != "Skupno število po mesecih"){
+          produkti <- switch(input$lastnost_produkt,
+                             "Skupno število v letu" = ggplot(podatki, aes(y=produkt, fill =produkt)) +
+                               geom_bar(position = position_dodge(width = 0.9)) + coord_flip() +
+                               ylab("produkt") + xlab("število") +
+                               ggtitle("Število posameznih produktov v celem letu") + 
+                               theme(axis.text.x=element_text(angle=45, hjust=1)),
+                             "Število posameznih po mesecih" = ggplot(mesec.produkti, aes(x=mesec, y=stevilo, group=produkt, colour=produkt)) + 
+                               geom_line() + geom_point() + ggtitle("Število posameznih produktov po mesecih") +
+                               ylab("število") + scale_colour_discrete(labels = c("avtomobilski", "hipotekarni",
+                                                                                  "investicijski", "izobraževalni", "osebni", "startup", "študentski")),
+                             "Delež v letu" = ggplot(delez.produktov2, aes(x="", y=delez, fill =produkt)) +
+                               geom_col(width=0.7, position = position_dodge(width = 1)) + 
+                               geom_label(aes(x="", y = delez + 2, label = delez), 
+                                          position = position_dodge(width = 1), show.legend = FALSE) + xlab("produkt") + ylab("delež (v %)")+
+                               ggtitle("Delež posameznih produktov (v odstotkih) v celem letu"),
+                             "Delež po mesecih" = ggplot(delez.produktov2, aes(x=mesec, y=mes_delez, group=produkt, colour=produkt)) + 
+                               geom_line() + geom_point() + ggtitle("Delež posameznih produktov (v odstotkih) po mesecih") +
+                               ylab("delež (v %)") + scale_colour_discrete(labels = c("avtomobilski", "hipotekarni",
+                                                                                      "investicijski", "izobraževalni", "osebni", "startup", "študentski"))
+          )
+          print(produkti)
+        }
+        else{
+          st_meseci <- switch(input$lastnost,
+                              "navaden" = ggplot(mesec.produkti.skupaj, aes(x=mesec, y=vseh, group=1)) + 
+                                geom_smooth() + geom_point() + ggtitle("Število vseh produktov po mesecih") +
+                                ylab("število"),
+                              "mediana" = ggplot(mesec.produkti.skupaj, aes(x=mesec, y=vseh, group=1)) + 
+                                geom_smooth() + geom_point() + ggtitle("Število vseh produktov po mesecih") +
+                                ylab("število")+ geom_line(aes(y=mesec.med, colour = "Mediana"), lwd=1.3) + 
+                                scale_colour_manual("", breaks= "Mediana",
+                                                    values = c("Mediana"="green")),
+                              "povprečje" = ggplot(mesec.produkti.skupaj, aes(x=mesec, y=vseh, group=1)) + 
+                                geom_smooth() + geom_point() + ggtitle("Število vseh produktov po mesecih") +
+                                ylab("število") + geom_line(aes(y=mesec.povp, colour="Povprečje"), lwd=1.3) + 
+                                scale_colour_manual("", breaks= "Povprečje",
+                                                    values = c("Povprečje"="red")),
+                              "vse" = ggplot(mesec.produkti.skupaj, aes(x=mesec, y=vseh, group=1)) + 
+                                geom_smooth() + geom_point() + ggtitle("Število vseh produktov po mesecih") +
+                                ylab("število") + geom_line(aes(y=mesec.povp, colour="Povprečje"), lwd=1.2) + 
+                                geom_line(aes(y=mesec.med, colour = "Mediana"), lwd=1.2) +
+                                scale_colour_manual("", breaks = c("Povprečje", "Mediana"),
+                                                    values = c("Povprečje"="red", "Mediana"="green")))
+          print(st_meseci)
+        }
+        
+        
+      
         
         
     })
