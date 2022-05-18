@@ -33,20 +33,13 @@ ui <- fluidPage(
                                                                "Skupno število po mesecih",
                                                                "Delež v letu",
                                                                "Delež po mesecih"))
-                                       #checkboxGroupInput("vrednost", "Izberite dodatno vrednost", 
-                                       #                          choiceNames =
-                                       #                              list(vrednost("povprečje"), vrednost("mediana")),
-                                       #                          choiceValues =
-                                       #                              list("povprečje", "mediana"))
-                                       
-                                       # treba dodat še graf z povprečjem in mediano
                                    ),
                                    #=============================================================
                                    conditionalPanel(condition="input.lastnost_produkt == 'Skupno število po mesecih' ",
                                                     
                                                     fluidRow(column(3,
                                                            
-                                                   radioButtons("lastnost", "Dodatna lastnost:",
+                                                   radioButtons("prod.lastnost.med.povp", "Dodatna lastnost:",
                                                                       choices = list("navaden", "mediana",
                                                                                      "povprečje", "vse"),
                                                                       selected = "navaden"),
@@ -68,7 +61,7 @@ ui <- fluidPage(
                                                                "Delež znotraj produktov")),
                                    ),
                                    
-                                   mainPanel(plotOutput("tipi"))),
+                                   column(10, plotOutput("tipi"))),
                                    
                           
                           tabPanel("Regije", h2("Regije"),
@@ -81,8 +74,28 @@ ui <- fluidPage(
                                                                 "Število produktov po mesecih",
                                                                 "Število tipov po mesecih")),
                                     ),
+                                   
+                                   conditionalPanel(condition="input.lastnost_regija == 'Število produktov po mesecih' ",
+                                                    
+                                                    fluidRow(column(3,
+                                                                    
+                                                                    radioButtons("reg.lastnost.produkt", "Izberite regijo:",
+                                                                                 choices = list("vzhodna", "zahodna"),
+                                                                                 selected = "vzhodna"),
+                                                    ))
+                                   ),
+                                   
+                                   conditionalPanel(condition="input.lastnost_regija == 'Število tipov po mesecih' ",
+                                                    
+                                                    fluidRow(column(3,
+                                                                    
+                                                                    radioButtons("reg.lastnost.tip", "Izberite regijo:",
+                                                                                 choices = list("vzhodna", "zahodna"),
+                                                                                 selected = "vzhodna"),
+                                                    ))
+                                   ),
                                     
-                                    mainPanel(plotOutput("regije"))),
+                                    column(10, plotOutput("regije"))),
                           
                           # treba dodat še delitev na vzhodno in zahodno 
                
@@ -146,6 +159,8 @@ server <- function(input, output) {
         
         podatki
     })
+    
+    # PRODUKT
 
     output$produkti <- renderPlot({
         
@@ -194,7 +209,7 @@ server <- function(input, output) {
           print(produkti)
         }
         else{
-          st_meseci <- switch(input$lastnost,
+          st_meseci <- switch(input$prod.lastnost.med.povp,
                               "navaden" = ggplot(mesec.produkti.skupaj, aes(x=mesec, y=vseh, group=1)) + 
                                 geom_smooth() + geom_point() + ggtitle("Število vseh produktov po mesecih") +
                                 ylab("število"),
@@ -222,6 +237,8 @@ server <- function(input, output) {
         
         
     })
+    
+    #TIP
     
     output$tipi <- renderPlot({
         
@@ -260,6 +277,8 @@ server <- function(input, output) {
  
     })   
     
+    #REGIJA
+    
     output$regije <- renderPlot({ 
       
         regija <- subset(podatki, select = c(produkt, mesec, tip, regija, poslovalnica))
@@ -283,6 +302,16 @@ server <- function(input, output) {
         zahodna.tip <- tip.regija %>% filter(regija == "zahodna")
         zahodna.tip$mesec <- factor(zahodna.tip$mesec, labels = one.year)
           
+        
+        if(input$lastnost_regija == "Število produktov po mesecih"){
+          
+          produkt <- switch (input$reg.lastnost.prod,
+            case = action
+          )
+          
+          
+        }
+        
         
         regije <- switch(input$lastnost_regija,
                          "Število produktov po regijah" = ggplot(regija, aes(y=produkt, fill = regija)) +

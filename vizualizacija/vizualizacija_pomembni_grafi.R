@@ -200,11 +200,13 @@ znesek <- subset(podatki, select = c(produkt, mesec, tip, znesek, regija, poslov
 znesek$mesec <- factor(znesek$mesec, levels = one.year)
 
 # znesek-produkt
-znesek.prod.povp <- znesek %>% group_by(produkt) %>% summarise(povpr_prod = mean(znesek))
+znesek.prod.povp <- znesek %>% group_by(produkt) %>% summarise(povpr_prod = round(mean(znesek),2))
 
 graf7.1 <- ggplot(znesek.prod.povp, aes(x = produkt, y=povpr_prod, fill = produkt)) + geom_col() + 
-  ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na produkt") + scale_fill_brewer("Accent")
-#print(graf7.1)
+  geom_label(aes(x=produkt, y = povpr_prod + 4, label = povpr_prod), 
+             position = position_dodge(width = 1), show.legend = FALSE) + 
+  ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na produkt")
+print(graf7.1)
 
 graf7.2 <- ggplot(znesek, aes(x= produkt, y=znesek, fill = produkt)) + 
   geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
