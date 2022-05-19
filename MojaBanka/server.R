@@ -892,58 +892,110 @@ shinyServer(function(input, output) {
             
         })
         
-        #
-        #napoved <- reactive(
-        #    
-        #    
-        #    znesek <- input$izbira_zneska,
-        #    regija <- switch(input$izbira_regije,
-        #                     "vzhodna" = 1,
-        #                     "zahodna" = 0),
-        #    poslovalnica <- input$izbira_poslovalnice,
-        #    mesec <- match(input$izbira_meseca, month.abb),
-        #    mesec_sin <- format(round(sin((podatki2$mesec-1)*(2*pi/12)),6), scientific = FALSE),
-        #    mesec_cos <- format(round(cos((podatki2$mesec-1)*(2*pi/12)),6), scientific = FALSE),
-        #    povpr_znesek <- input$izbira_zneska,
-        #    produkt_avtomobilski <- if(input$izbira_produkta == "avtomobilski"){1}
-        #                            else{0},
-        #    produkt_hipotekarni <- if(input$izbira_produkta == "hipotekarni"){1}
-        #                            else{0},
-        #    produkt_investicijski <- if(input$izbira_produkta == "investicijski"){1}
-        #                            else{0},
-        #    produkt_izobraževalni <- if(input$izbira_produkta == "izobraževalni"){1}
-        #                            else{0},
-        #    produkt_osebni <- if(input$izbira_produkta == "osebni"){1}
-        #                            else{0},
-        #    produkt_startup <- if(input$izbira_produkta == "startup"){1}
-        #                            else{0},
-        #    produkt_študentski <- if(input$izbira_produkta == "študentski"){1}
-        #                            else{0},
-        #    tip_Novo <- if(input$izbira_tipa == "Novo"){1}
-        #                            else{0},
-        #    tip_Obnova <- if(input$izbira_tipa == "Obnova"){1}
-        #                            else{0},
-        #    tip_Podaljšanje <- if(input$izbira_tipa == "Podaljšanje"){1}
-        #                            else{0},
-        #    tip_Sprememba <- if(input$izbira_tipa == "Sprememba"){1}
-        #                            else{0},
-        #    novi_podatki <- data.frame(znesek, regija, poslovalnica, mesec_sin, mesec_cos, povpr_znesek,
-        #                          produkt_avtomobilski, produkt_hipotekarni, produkt_investicijski,
-        #                          produkt_izobraževalni, produkt_osebni, produkt_startup,
-        #                          tip_Novo, tip_Obnova, tip_Podaljšanje),
-        #    
-        #    
-        #    
-        #    pred.modela <- predict(lin.mod.eno3, novi_podatki),
-        #    napoved <- exp(pred.modela)-1
-        #    
-        #    
-        #    
-        #)
         
-        output$izracunani.casi <- renderText({
-            "Napovedan čas do odobritve kredita je" 
-        })
+            
+        
+        
+            
+            znesek.i <- reactive(quote({input$izbira_zneska}), quoted=TRUE)
+            regija.i <- reactive(quote({if(input$izbira_regije == "vzhodna"){1}
+                                      else{0}}), quoted=TRUE)
+            poslovalnica.i <- reactive(quote({as.numeric(input$izbira_poslovalnice)}), quoted=TRUE)
+            mesec.i <- reactive(quote({match(input$izbira_meseca, sub("May", "Maj", month.abb))}), quoted=TRUE)
+            mesec_sin <- reactive(quote({as.numeric(format(round(sin((mesec.i()-1)*(2*pi/12)),6), 
+                                                scientific = FALSE))}), quoted=TRUE)
+            mesec_cos <- reactive(quote({as.numeric(format(round(cos((mesec.i()-1)*(2*pi/12)),6),
+                                                scientific = FALSE))}), quoted=TRUE)
+            povpr_znesek.i <- reactive(quote({input$izbira_zneska}), quoted=TRUE)
+            produkt_avtomobilski <- reactive(quote({
+                if(input$izbira_produkta == "avtomobilski"){1}
+                else{0}}), quoted=TRUE)
+            produkt_hipotekarni <- reactive(quote({
+                if(input$izbira_produkta == "hipotekarni"){1}
+                else{0}}), quoted=TRUE)
+            produkt_investicijski <- reactive(quote({
+                if(input$izbira_produkta == "investicijski"){1}
+                else{0}}), quoted=TRUE)
+            produkt_izobraževalni <- reactive(quote({
+                if(input$izbira_produkta == "izobraževalni"){1}
+                else{0}}), quoted=TRUE)
+            produkt_osebni <- reactive(quote({
+                if(input$izbira_produkta == "osebni"){1}
+                else{0}}), quoted=TRUE)
+            produkt_startup <- reactive(quote({
+                if(input$izbira_produkta == "startup"){1}
+                else{0}}), quoted=TRUE)
+            produkt_študentski <- reactive(quote({
+                if(input$izbira_produkta == "študentski"){1}
+                else{0}}), quoted=TRUE)
+            tip_Novo <- reactive(quote({
+                if(input$izbira_tipa == "Novo"){1}
+                else{0}}), quoted=TRUE)
+            tip_Obnova <- reactive(quote({
+                if(input$izbira_tipa == "Obnova"){1}
+                else{0}}), quoted=TRUE)
+            tip_Podaljšanje <- reactive(quote({
+                if(input$izbira_tipa == "Podaljšanje"){1}
+                else{0}}), quoted=TRUE)
+            tip_Sprememba <- reactive(quote({
+                if(input$izbira_tipa == "Sprememba"){1}
+                else{0}}), quoted=TRUE)
+
+            output$izracunani.casi.tty <- renderText({
+                
+                validate(need(input$izbira_zneska != "", "Vnesite pozitivno vrednost zneska"))
+                
+                
+            pred.modela.tty <- reactive(quote({predict(mod.TTY, newdata = data.frame(
+                "znesek" = znesek.i(), "regija" = regija.i(), "poslovalnica" = poslovalnica.i(),
+                "mesec_sin" = mesec_sin(), "mesec_cos" = mesec_cos(), "povpr_znesek" = povpr_znesek.i(),
+                "produkt_avtomobilski" = produkt_avtomobilski(), "produkt_hipotekarni" = produkt_hipotekarni(),
+                "produkt_investicijski" = produkt_investicijski(), "produkt_izobraževalni" =  produkt_izobraževalni(),
+                "produkt_osebni" = produkt_osebni(), "produkt_startup" = produkt_startup(), "tip_Novo" = tip_Novo(),
+                "tip_Obnova" = tip_Obnova(), "tip_Podaljšanje" = tip_Podaljšanje()))}), quoted=TRUE)
+            napoved.tty <- reactive(quote({exp(pred.modela.tty())-1}), quoted=TRUE)
+            
+            paste("Predviden čas do odobritve kredita je", round(napoved.tty()), "dni.")
+            
+            })
+            
+            
+            output$izracunani.casi.ttc <- renderText({
+                
+                validate(need(input$izbira_zneska != "", ""))
+                
+            pred.modela.ttc <- reactive(quote({predict(mod.TTC, newdata = data.frame(
+                "znesek" = znesek.i(), "regija" = regija.i(), "poslovalnica" = poslovalnica.i(),
+                "mesec_sin" = mesec_sin(), "mesec_cos" = mesec_cos(),
+                "produkt_avtomobilski" = produkt_avtomobilski(), "produkt_hipotekarni" = produkt_hipotekarni(),
+                "produkt_investicijski" = produkt_investicijski(), "produkt_izobraževalni" =  produkt_izobraževalni(),
+                "produkt_osebni" = produkt_osebni(), "produkt_startup" = produkt_startup(), "tip_Novo" = tip_Novo(),
+                "tip_Obnova" = tip_Obnova(), "tip_Podaljšanje" = tip_Podaljšanje()))}), quoted=TRUE)
+            napoved.ttc <- reactive(quote({exp(pred.modela.ttc())-1}), quoted=TRUE)
+            
+            paste("Predviden čas do podpisa pogodbe je", round(napoved.ttc()), "dni.")
+            
+            })
+            
+            
+            output$izracunani.casi.ttm <- renderText({
+                
+                validate(need(input$izbira_zneska != "", ""))
+                
+            pred.modela.ttm <- reactive(quote({predict(mod.TTM, newdata = data.frame(
+                "znesek" = znesek.i(), "regija" = regija.i(), "poslovalnica" = poslovalnica.i(),
+                "mesec_sin" = mesec_sin(), "mesec_cos" = mesec_cos(),
+                "produkt_avtomobilski" = produkt_avtomobilski(), "produkt_hipotekarni" = produkt_hipotekarni(),
+                "produkt_investicijski" = produkt_investicijski(), "produkt_izobraževalni" =  produkt_izobraževalni(),
+                "produkt_osebni" = produkt_osebni(), "produkt_startup" = produkt_startup(), "tip_Novo" = tip_Novo(),
+                "tip_Obnova" = tip_Obnova(), "tip_Podaljšanje" = tip_Podaljšanje()))}), quoted=TRUE)
+            napoved.ttm <- reactive(quote({exp(pred.modela.ttm())-1}), quoted=TRUE)
+            
+            paste("Predviden čas do prejema sredstev je", min(100,round(napoved.ttm())), "dni.")
+            
+            })
+            
+
         
 })
 

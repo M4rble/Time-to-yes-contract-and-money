@@ -315,6 +315,14 @@ paste("Pri linearni regresiji z lm in modelom TTY glede na vse spremenljivke, je
 
 paste("Izgleda, kot da je najboljši model za TTY mod.glm.log z vključeno dodatno spremenljivko povpr_znesek.")
 
+paste("Naučimo najboljši model še enkrat na vseh podatkih")
+
+mod.TTY <- glm(data = podatki.TTY[,-c(1,2)], 
+            formula = TTY+1~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+              produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+              produkt_izobraževalni + produkt_osebni + produkt_startup + povpr_znesek + 
+              tip_Novo + tip_Obnova + tip_Podaljšanje, family = "gaussian"(link= "log"))
+summary(mod.TTY)
 
 # 1. PRISTOP - krediti znotraj istega id-ja so neodvisni
 #=======================================================
@@ -658,12 +666,18 @@ ttc.lin.mod.dve3$`napaka 1`
 ttc.lin.mod.dve3$`napaka 2`
 
 paste("Katerekoli dve vklkučimo je napaka večja.")
-paste("Pri linearni regresiji z lm in modelom TTY glede na vse spremenljivke, je najbolje ne vključimo nobene dodatne spremenljivke.")
+paste("Pri linearni regresiji z lm in modelom TTC glede na vse spremenljivke, je najbolje ne vključimo nobene dodatne spremenljivke.")
 
 
-paste("Izgleda, kot da je najboljši model za TTY mod.glm.log brez vključenih dodatnih spremenljivk.")
+paste("Izgleda, kot da je najboljši model za TTC mod.glm.log brez vključenih dodatnih spremenljivk.")
 
 
+mod.TTC <- glm(data = podatki.TTC[,-c(1,2)], 
+               formula = TTC+1~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                 produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                 produkt_izobraževalni + produkt_osebni + produkt_startup +  
+                 tip_Novo + tip_Obnova + tip_Podaljšanje, family = "gaussian"(link= "log"))
+summary(mod.TTC)
 
 
 
@@ -903,6 +917,13 @@ paste("Pri linearni regresiji z lm in modelom TTY glede na vse spremenljivke, je
 
 
 paste("Izgleda, kot da je najboljši model za TTY mod.glm.log brez vključenih dodatnih spremenljivk.")
+
+mod.TTM <- glm(data = podatki.TTM[,-c(1,2)], 
+               formula = TTM~znesek + regija + poslovalnica + mesec_sin + mesec_cos + 
+                 produkt_avtomobilski + produkt_hipotekarni + produkt_investicijski + 
+                 produkt_izobraževalni + produkt_osebni + produkt_startup +  
+                 tip_Novo + tip_Obnova + tip_Podaljšanje, family = "gaussian"(link= "log"))
+summary(mod.TTM)
 
 #mogoče bi bilo smiselno gledati modele na TTM-TTC in TTC-TTY ?
 

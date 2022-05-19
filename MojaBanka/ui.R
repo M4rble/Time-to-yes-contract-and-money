@@ -8,9 +8,16 @@
 #
 
 library(shiny)
+library(shinythemes)
 
 # Define UI for application that draws a histogram
-shinyUI(fluidPage(
+shinyUI(fluidPage(theme = shinytheme("united"),
+                  
+        #tags$head(
+              tags$style(".shiny-output-error-validation {color: green;}
+                              .col-sm-8{color: red;font-size: 20px;font-style: italic;}"),
+              
+            #),
         
         # Application title
         titlePanel("Dobrodošli v AMBanko!"),
@@ -359,32 +366,32 @@ shinyUI(fluidPage(
                    
                    navbarMenu("Izračunaj svoje čase",
                               tabPanel("Izračun časov za svoj kredit", h2("Izračun časov za svoj kredit"),
-                                 selectInput("izbira_produkta",
-                                             label = "Izberite želeni produkt",
-                                             choices = c("avtomobilski", "hipotekarni", "investicijski",
-                                                         "izobraževalni", "osebni", "startup", "študentski"),
-                                             multiple = TRUE),
-                                 selectInput("izbira_meseca",
-                                             label = "Izberite mesec, ko boste oddali vlogo",
-                                             choices = c("Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
-                                             multiple = TRUE),
-                                 selectInput("izbira_tipa",
-                                             label = "Izberite tip kredita",
-                                             choices = c("Novo", "Obnova", "Podaljšanje", "Sprememba"),
-                                             multiple = TRUE),
-                                 selectInput("izbira_regije",
-                                             label = "Izberite regijo v kateri boste oddali vlogo",
-                                             choices = c("vzhodna", "zahodna"),
-                                             multiple = TRUE),
-                                 selectInput("izbira_poslovalnice",
-                                             label = "Izberite poslovalnico, v kateri boste oddali vlogo",
-                                             choices = c(1,2,3,4,5,6,7),
-                                             multiple = TRUE),
-                                 numericInput("izbira_zneska",
-                                              label = "Vnesite želeni znesek kredita (med 1 in 750)",
-                                           value="", min=1, max=750),
+                                       sidebarPanel(
+                                           numericInput("izbira_zneska",
+                                                        label = "Vnesite želeni znesek kredita (večji od 1)",
+                                                        value="", min=1, max=750),
+                                            selectInput("izbira_produkta",
+                                                        label = "Izberite želeni produkt",
+                                                        choices = c("avtomobilski", "hipotekarni", "investicijski",
+                                                                    "izobraževalni", "osebni", "startup", "študentski")),
+                                            selectInput("izbira_meseca",
+                                                        label = "Izberite mesec, ko boste oddali vlogo",
+                                                        choices = c("Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aug","Sep","Oct","Nov","Dec")),
+                                            selectInput("izbira_tipa",
+                                                        label = "Izberite tip kredita",
+                                                        choices = c("Novo", "Obnova", "Podaljšanje", "Sprememba")),
+                                            selectInput("izbira_regije",
+                                                        label = "Izberite regijo v kateri boste oddali vlogo",
+                                                        choices = c("vzhodna", "zahodna")),
+                                            selectInput("izbira_poslovalnice",
+                                                        label = "Izberite poslovalnico, v kateri boste oddali vlogo",
+                                                        choices = c(1,2,3,4,5,6,7))
+                                       ),
                    
-                                 column(8, textOutput("izracunani.casi"))
+                                 mainPanel(textOutput("izracunani.casi.tty"), 
+                                           textOutput("izracunani.casi.ttc"),
+                                           textOutput("izracunani.casi.ttm"),
+                                          )
                                  ))
                    
                    
