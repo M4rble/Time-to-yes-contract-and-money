@@ -14,8 +14,8 @@ library(shinythemes)
 shinyUI(fluidPage(theme = shinytheme("united"),
                   
         #tags$head(
-              tags$style(".shiny-output-error-validation {color: green;}
-                              .col-sm-8{color: red;font-size: 20px;font-style: italic;}"),
+              tags$style(".shiny-output-error-validation {color: red;font-size: 20px;}
+                              .col-sm-8{color: green;font-size: 20px;font-style: italic;}"),
               
             #),
         
@@ -23,10 +23,6 @@ shinyUI(fluidPage(theme = shinytheme("united"),
         titlePanel("Dobrodošli v AMBanko!"),
         
         navbarPage("AMBanka",
-                   navbarMenu("Tabela podatkov",
-                              
-                              tabPanel("Tabela osnovnih podatkov o strankah",
-                                       DT::dataTableOutput("podatki"))),
                    
                    navbarMenu("Analiza osnovnih podatkov",
                               tabPanel("Produkti", h2("Produkti"),
@@ -361,15 +357,18 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                               
                    ),
                    
+                   navbarMenu("Tabela podatkov",
+                              
+                              tabPanel("Tabela osnovnih podatkov o strankah",
+                                       DT::dataTableOutput("podatki"))),
                    
                    
-                   
-                   navbarMenu("Izračunaj svoje čase",
-                              tabPanel("Izračun časov za svoj kredit", h2("Izračun časov za svoj kredit"),
+                   navbarMenu("Izračunaj svoje čase!",
+                              tabPanel("Izračun časov za svoj kredit", h2("Izračunajte predvidene čase za svoj kredit"),
                                        sidebarPanel(
                                            numericInput("izbira_zneska",
-                                                        label = "Vnesite želeni znesek kredita (večji od 1)",
-                                                        value="", min=1, max=750),
+                                                        label = "Vnesite želeni znesek kredita (med 1 in 750)",
+                                                        "", min=1, max=750),
                                             selectInput("izbira_produkta",
                                                         label = "Izberite želeni produkt",
                                                         choices = c("avtomobilski", "hipotekarni", "investicijski",
@@ -393,6 +392,7 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                            textOutput("izracunani.casi.ttm"),
                                           )
                                  ))
+                   
                    
                    
         )

@@ -14,10 +14,6 @@ library(shiny)
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
         
-        output$podatki<- DT::renderDataTable({
-            
-            podatki
-        })
         
         # PRODUKT
         
@@ -210,6 +206,7 @@ shinyServer(function(input, output) {
               
         })
         
+        # POSLOVALNICA
         
         output$poslovalnice <- renderPlot({
             
@@ -241,6 +238,7 @@ shinyServer(function(input, output) {
             
         })
         
+        #ZNESEK
         
         output$zneski <- renderPlot({
             
@@ -352,6 +350,8 @@ shinyServer(function(input, output) {
                 }
             
         })
+        
+        #ČASI
         
         output$hist.casi <- renderPlot({
             
@@ -893,11 +893,14 @@ shinyServer(function(input, output) {
         })
         
         
-            
+        # RAČUNANJE SVOJEGA KREDITA    
         
         
             
-            znesek.i <- reactive(quote({input$izbira_zneska}), quoted=TRUE)
+            znesek.i <- reactive(quote({
+                        if(input$izbira_zneska > 750){max}
+                        else if(input$izbira_zneska < 0){min}
+                        else{input$izbira_zneska}}), quoted=TRUE)
             regija.i <- reactive(quote({if(input$izbira_regije == "vzhodna"){1}
                                       else{0}}), quoted=TRUE)
             poslovalnica.i <- reactive(quote({as.numeric(input$izbira_poslovalnice)}), quoted=TRUE)
@@ -944,6 +947,7 @@ shinyServer(function(input, output) {
             output$izracunani.casi.tty <- renderText({
                 
                 validate(need(input$izbira_zneska != "", "Vnesite pozitivno vrednost zneska"))
+                validate(need(input$izbira_zneska < 751 & input$izbira_zneska > 0,  "Vnesite vrednost med 1 in 750"))
                 
                 
             pred.modela.tty <- reactive(quote({predict(mod.TTY, newdata = data.frame(
@@ -955,7 +959,8 @@ shinyServer(function(input, output) {
                 "tip_Obnova" = tip_Obnova(), "tip_Podaljšanje" = tip_Podaljšanje()))}), quoted=TRUE)
             napoved.tty <- reactive(quote({exp(pred.modela.tty())-1}), quoted=TRUE)
             
-            paste("Predviden čas do odobritve kredita je", round(napoved.tty()), "dni.")
+            paste("Predviden čas do odobritve kredita je", if(napoved.tty() > 100){"več kot 100"}
+                                                           else{round(napoved.tty())}, "dni.")
             
             })
             
@@ -963,6 +968,7 @@ shinyServer(function(input, output) {
             output$izracunani.casi.ttc <- renderText({
                 
                 validate(need(input$izbira_zneska != "", ""))
+                validate(need(input$izbira_zneska < 751 & input$izbira_zneska > 0, ""))
                 
             pred.modela.ttc <- reactive(quote({predict(mod.TTC, newdata = data.frame(
                 "znesek" = znesek.i(), "regija" = regija.i(), "poslovalnica" = poslovalnica.i(),
@@ -973,7 +979,8 @@ shinyServer(function(input, output) {
                 "tip_Obnova" = tip_Obnova(), "tip_Podaljšanje" = tip_Podaljšanje()))}), quoted=TRUE)
             napoved.ttc <- reactive(quote({exp(pred.modela.ttc())-1}), quoted=TRUE)
             
-            paste("Predviden čas do podpisa pogodbe je", round(napoved.ttc()), "dni.")
+            paste("Predviden čas do podpisa pogodbe je", if(napoved.ttc() > 100){"več kot 100"}
+                                                          else{round(napoved.ttc())}, "dni.")
             
             })
             
@@ -981,6 +988,7 @@ shinyServer(function(input, output) {
             output$izracunani.casi.ttm <- renderText({
                 
                 validate(need(input$izbira_zneska != "", ""))
+                validate(need(input$izbira_zneska < 751 & input$izbira_zneska > 0, ""))
                 
             pred.modela.ttm <- reactive(quote({predict(mod.TTM, newdata = data.frame(
                 "znesek" = znesek.i(), "regija" = regija.i(), "poslovalnica" = poslovalnica.i(),
@@ -991,11 +999,16 @@ shinyServer(function(input, output) {
                 "tip_Obnova" = tip_Obnova(), "tip_Podaljšanje" = tip_Podaljšanje()))}), quoted=TRUE)
             napoved.ttm <- reactive(quote({exp(pred.modela.ttm())-1}), quoted=TRUE)
             
-            paste("Predviden čas do prejema sredstev je", min(100,round(napoved.ttm())), "dni.")
+            paste("Predviden čas do prejema sredstev je", if(napoved.ttm() > 100){"več kot 100"}
+                                                          else{round(napoved.ttm())}, "dni.")
             
             })
             
-
+    
+            output$podatki<- DT::renderDataTable({
+                
+                podatki
+            })
         
 })
 
