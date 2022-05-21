@@ -22,7 +22,7 @@ graf1.1 <- ggplot(podatki, aes(y=produkt, fill =produkt)) +
            geom_bar(position = position_dodge(width = 0.9)) + coord_flip() +
            ylab("produkt") + xlab("število") +
            ggtitle("Število posameznih produktov v celem letu") + 
-           theme(axis.text.x=element_text(angle=45, hjust=1))
+           theme(axis.text.x=element_text(angle=30, hjust=1))
 #print(graf1.1)
 
 
@@ -30,7 +30,7 @@ graf1.2 <- ggplot(delez.produktov2, aes(x="", y=delez, fill =produkt)) +
   geom_col(width=0.7, position = position_dodge(width = 1)) + 
   geom_label(aes(x="", y = delez + 2, label = delez), 
              position = position_dodge(width = 1), show.legend = FALSE) + xlab("produkt") + 
-  ggtitle("Delež posameznih produktov (v odstotkih) v celem letu")
+  ggtitle("Delež posameznih produktov (v odstotkih) v celem letu") + ylab("delež (v %)")
 #print(graf1.1)
 
 
@@ -79,7 +79,7 @@ prod.del.tip <- prod.tip %>% group_by(produkt) %>% count(tip) %>%
 graf3.4 <- ggplot(prod.del.tip, aes(x=produkt, y=delez, fill=tip)) + 
   geom_col(position = position_dodge(width = 0.9)) +
   ggtitle("Delež posameznih tipov znotraj posameznega produkta") + xlab("produkt") + 
-  ylab("delež (v %") + theme(axis.text.x=element_text(angle=45, hjust=1))
+  ylab("delež (v %") + theme(axis.text.x=element_text(angle=30, hjust=1))
 #print(graf3.4)
 
 
@@ -99,7 +99,7 @@ graf4.1 <- ggplot(mesec.produkti, aes(x=mesec, y=stevilo, group=produkt, colour=
 
 mesec.produkti.skupaj <- mesec.produkti %>% summarise(vseh = sum(stevilo))
 graf4.2 <- ggplot(mesec.produkti.skupaj, aes(x=mesec, y=vseh, group=1)) + 
-  geom_smooth() + geom_point() + ggtitle("Število vseh produktov po mesecih") +
+  geom_smooth() + geom_point() + ggtitle("Število vseh oddanih vlog po mesecih") +
   ylab("število")
 #print(graf4.2)
 
@@ -120,7 +120,7 @@ regija <- subset(podatki, select = c(produkt, mesec, tip, regija, poslovalnica))
 graf5.1 <- ggplot(regija, aes(y=produkt, fill = regija)) +
   geom_bar(position = position_dodge(width = 0.9)) + coord_flip() +
   ggtitle("Število posameznih produktov v posamezni regiji") + 
-  xlab("število") + theme(axis.text.x=element_text(angle=45, hjust=1))
+  xlab("število") + theme(axis.text.x=element_text(angle=30, hjust=1))
 #print(graf5.1)
 
 prod.regija <- regija %>% group_by(regija) %>% count(produkt, mesec)
@@ -177,7 +177,7 @@ posl.mesec <- rename(posl.mesec, "st_poslov" = "n")
 posl.mesec$mesec <- factor(posl.mesec$mesec, levels = one.year)
 
 graf6.2 <- ggplot(posl.mesec, aes(x=mesec, y=st_poslov, group=poslovalnica, colour=poslovalnica)) + 
-  geom_line() + geom_point() + ggtitle("Število poslov v posamezni posovalnici po mesecih") +
+  geom_line() + geom_point() + ggtitle("Število obdelanih vlog v posamezni posovalnici po mesecih") +
   ylab("število") 
 #print(graf6.2)
 
@@ -203,16 +203,17 @@ znesek$mesec <- factor(znesek$mesec, levels = one.year)
 znesek.prod.povp <- znesek %>% group_by(produkt) %>% summarise(povpr_prod = round(mean(znesek),2))
 
 graf7.1 <- ggplot(znesek.prod.povp, aes(x = produkt, y=povpr_prod, fill = produkt)) + geom_col() + 
-  geom_label(aes(x=produkt, y = povpr_prod + 4, label = povpr_prod), 
+  geom_label(aes(x=produkt, y = povpr_prod + 5, label = povpr_prod), 
              position = position_dodge(width = 1), show.legend = FALSE) + 
-  ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na produkt")
-print(graf7.1)
+  ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na produkt") +
+  theme(axis.text.x=element_text(angle=30, hjust=1)) + scale_fill_brewer(palette = "Dark2")
+#print(graf7.1)
 
 graf7.2 <- ggplot(znesek, aes(x= produkt, y=znesek, fill = produkt)) + 
   geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
   ggtitle("Graf kvantilov zneskov po produktih") +
-  theme(axis.text.x=element_text(angle=45, hjust=1))
+  theme(axis.text.x=element_text(angle=30, hjust=1))
 #print(graf7.2)
 
 znesek.mesec.povp <- znesek %>% group_by(mesec) %>% summarise(povpr_prod = mean(znesek))
@@ -231,7 +232,7 @@ graf7.3.2 <- graf7.3 + geom_line(aes(y=mean(povpr_prod), colour="Povprečje")) +
 graf7.4 <- ggplot(znesek, aes(x= mesec, y=znesek, fill = mesec)) + 
   geom_boxplot(outlier.color = "blue") +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
-  ggtitle("Graf kvantilov zneskov po mesecih")
+  ggtitle("Graf kvantilov zneskov po mesecih") 
 #print(graf7.4)
 
 
@@ -240,7 +241,8 @@ znesek.tip.povp <- znesek %>% group_by(tip) %>% summarise(povpr_prod = round(mea
 graf7.5 <- ggplot(znesek.tip.povp, aes(x = tip, y=povpr_prod, fill = tip)) + geom_col() + 
   geom_label(aes(x=tip, y = povpr_prod + 4, label = povpr_prod), 
              position = position_dodge(width = 1), show.legend = FALSE) +
-  ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na tip")
+  ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na tip") + 
+  scale_fill_brewer(palette = "Dark2")
 #print(graf7.5)
 
 graf7.6 <- ggplot(znesek, aes(x= tip, y=znesek, fill = tip)) + 
@@ -255,13 +257,14 @@ znesek.regija.povp <- znesek %>% group_by(regija) %>% summarise(povpr_prod = rou
 graf7.7 <- ggplot(znesek.regija.povp, aes(x = regija, y=povpr_prod, fill = regija)) + geom_col() + 
   geom_label(aes(x=regija, y = povpr_prod + 4, label = povpr_prod), 
              position = position_dodge(width = 1), show.legend = FALSE) +
-  ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na regijo")
+  ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na regijo") + 
+  scale_fill_brewer(palette = "Dark2")
 #print(graf7.7)
 
 graf7.8 <- ggplot(znesek, aes(x= regija, y=znesek, fill = regija)) + 
   geom_boxplot(outlier.color = "blue") + scale_fill_brewer(palette = "Dark2") +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +
-  ggtitle("Graf kvantilov zneskov po regijah")
+  ggtitle("Graf kvantilov zneskov po regijah") 
 #print(graf7.8)
 
 
@@ -270,7 +273,8 @@ znesek.posl.povp <- znesek %>% group_by(poslovalnica) %>% summarise(povpr_prod =
 graf7.9 <- ggplot(znesek.posl.povp, aes(x = poslovalnica, y=povpr_prod, fill = poslovalnica)) + geom_col() + 
   geom_label(aes(x=poslovalnica, y = povpr_prod + 5, label = povpr_prod), 
              position = position_dodge(width = 1), show.legend = FALSE) +
-  ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na poslovalnico")
+  ylab("Povprečen znesek") + ggtitle("Povprečni zneski glede na poslovalnico") +
+  scale_fill_brewer(palette = "Dark2")
 #print(graf7.9)
 
 graf7.10 <- ggplot(znesek, aes(x= poslovalnica, y=znesek, fill = poslovalnica)) + 
@@ -337,9 +341,8 @@ casi.produkt.plt <- ggplot(casi.produkt, aes(x=produkt, y=cas, fill=produkt)) +
   geom_hline(aes(yintercept = povprecje, group = TTi, colour = 'Povprečje vseh'), lwd=0.8, lty=3) +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") + 
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
-  ggtitle("Grafi kvantilov časov po produktih") + ylab("Čas (v dnevih)") +
-  scale_fill_manual(labels = c("avtomobilski", "hipotekarni", "investicijski", "izobraževalni", "osebni", "startup", "študentski"),
-                    values = palette("Dark2")) + 
+  ggtitle("Grafi kvantilov absolutnih časov po produktih") + ylab("Čas (v dnevih)") +
+  scale_fill_manual(values = palette("Dark2")) + 
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
                       values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))
 #print(casi.produkt.plt)
@@ -355,7 +358,7 @@ casi.produkt.rac.plt <- ggplot(casi.produkt.rac, aes(x=produkt, y=cas, fill=prod
   geom_hline(aes(yintercept = povprecje, group = TTi, colour = 'Povprečje vseh'), lwd=0.8, lty=3) +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") + 
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
-  ggtitle("Grafi kvantilov časov po produktih") + ylab("Čas (v dnevih)") +
+  ggtitle("Grafi kvantilov relativnih časov po produktih") + ylab("Čas (v dnevih)") +
   scale_fill_manual(labels = c("avtomobilski", "hipotekarni", "investicijski", "izobraževalni", "osebni", "startup", "študentski"),
                     values = palette("Dark2")) + 
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
@@ -369,6 +372,8 @@ casi.mesec <- podatki %>% select(TTY,TTC,TTM,mesec)
 casi.mesec <- casi.mesec %>%  pivot_longer(!mesec, names_to="TTi", values_to = "cas")
 casi.mesec <- within(casi.mesec, TTi <- factor(TTi, levels=c("TTY", "TTC", "TTM")) )
 casi.mesec <- casi.mesec %>% group_by(TTi) %>% mutate(mediana = median(cas), povprecje = round(mean(cas),2))
+one.year <- c("Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+casi.mesec$mesec <- factor(casi.mesec$mesec, levels = one.year)
 
 casi.mesec.plt <- ggplot(casi.mesec, aes(x=mesec, y=cas, fill=mesec)) + 
   geom_boxplot(outlier.colour = "blue") + facet_wrap(vars(TTi)) + 
@@ -376,7 +381,7 @@ casi.mesec.plt <- ggplot(casi.mesec, aes(x=mesec, y=cas, fill=mesec)) +
   geom_hline(aes(yintercept = povprecje, group = TTi, colour = 'Povprečje vseh'), lwd=0.8, lty=3) +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") + 
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
-  ggtitle("Grafi kvantilov časov po mesecih") + ylab("Čas (v dnevih)") +
+  ggtitle("Grafi kvantilov absolutnih časov po mesecih") + ylab("Čas (v dnevih)") +
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
                       values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))
 #print(casi.mesec.plt)
@@ -385,6 +390,7 @@ casi.mesec.rac <- podatki %>% summarise(mesec, TTY, TTC-TTY, TTM-TTC)
 casi.mesec.rac <- casi.mesec.rac %>% pivot_longer(!mesec, names_to = "TTi", values_to = "cas")
 casi.mesec.rac <- within(casi.mesec.rac, TTi <- factor(TTi, levels = c("TTY", "TTC - TTY", "TTM - TTC")))
 casi.mesec.rac <- casi.mesec.rac %>% group_by(TTi) %>% mutate(mediana = median(cas), povprecje = round(mean(cas),2))
+casi.mesec.rac$mesec <- factor(casi.mesec.rac$mesec, levels = one.year)
 
 casi.mesec.rac.plt <- ggplot(casi.mesec.rac, aes(x=mesec, y=cas, fill=mesec)) + 
   facet_wrap(vars(TTi)) +  geom_boxplot(outlier.colour = "blue") + 
@@ -392,7 +398,7 @@ casi.mesec.rac.plt <- ggplot(casi.mesec.rac, aes(x=mesec, y=cas, fill=mesec)) +
   geom_hline(aes(yintercept = povprecje, group = TTi, colour = 'Povprečje vseh'), lwd=0.8, lty=3) +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") + 
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
-  ggtitle("Grafi kvantilov časov po mesecih") + ylab("Čas (v dnevih)") +
+  ggtitle("Grafi kvantilov relativnih časov po mesecih") + ylab("Čas (v dnevih)") +
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
                       values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))
 #print(casi.mesec.rac.plt)
@@ -411,7 +417,7 @@ casi.tip.plt <- ggplot(casi.tip, aes(x=tip, y=cas, fill=tip)) +
   geom_hline(aes(yintercept = povprecje, group = TTi, colour = 'Povprečje vseh'), lwd=0.8, lty=3) +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") + 
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
-  ggtitle("Grafi kvantilov časov po tipih") + ylab("Čas (v dnevih)") +
+  ggtitle("Grafi kvantilov absolutnih časov po tipih") + ylab("Čas (v dnevih)") +
   scale_fill_manual(values = palette("Dark2")) + 
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
                       values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))
@@ -428,7 +434,7 @@ casi.tip.rac.plt <- ggplot(casi.tip.rac, aes(x=tip, y=cas, fill=tip)) +
   geom_hline(aes(yintercept = povprecje, group = TTi, colour = 'Povprečje vseh'), lwd=0.8, lty=3) +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") + 
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
-  ggtitle("Grafi kvantilov racionaliziranih časov glede na TTY po tipih") + ylab("Čas (v dnevih)") +
+  ggtitle("Grafi kvantilov relativnih časov po tipih") + ylab("Čas (v dnevih)") +
   scale_fill_manual(values = palette("Dark2")) +
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
                       values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))
@@ -448,7 +454,7 @@ casi.regija.plt <- ggplot(casi.regija, aes(x=regija, y=cas, fill=regija)) +
   geom_hline(aes(yintercept = povprecje, group = TTi, colour = 'Povprečje vseh'), lwd=0.8, lty=3) +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") + 
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
-  ggtitle("Grafi kvantilov časov po regijah") + ylab("Čas (v dnevih)") +
+  ggtitle("Grafi kvantilov absolutnih časov po regijah") + ylab("Čas (v dnevih)") +
   scale_fill_manual(values = palette("Dark2")) + 
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
                       values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))
@@ -465,7 +471,7 @@ casi.regija.rac.plt <- ggplot(casi.regija.rac, aes(x=regija, y=cas, fill=regija)
   geom_hline(aes(yintercept = povprecje, group = TTi, colour = 'Povprečje vseh'), lwd=0.8, lty=3) +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") + 
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
-  ggtitle("Grafi kvantilov racionaliziranih časov glede na TTY po regijah") + ylab("Čas (v dnevih)") +
+  ggtitle("Grafi kvantilov relativnih časov po regijah") + ylab("Čas (v dnevih)") +
   scale_fill_manual(values = palette("Dark2")) +
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
                       values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))
@@ -485,7 +491,7 @@ casi.poslovalnica.plt <- ggplot(casi.poslovalnica, aes(x=poslovalnica, y=cas, fi
   geom_hline(aes(yintercept = povprecje, group = TTi, colour = 'Povprečje vseh'), lwd=0.8, lty=3) +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") + 
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
-  ggtitle("Grafi kvantilov časov po poslovalnicah") + ylab("Čas (v dnevih)") +
+  ggtitle("Grafi kvantilov absolutnih časov po poslovalnicah") + ylab("Čas (v dnevih)") +
   scale_fill_manual(values = palette("Dark2")) + 
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
                       values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))
@@ -502,7 +508,7 @@ casi.poslovalnica.rac.plt <- ggplot(casi.poslovalnica.rac, aes(x=poslovalnica, y
   geom_hline(aes(yintercept = povprecje, group = TTi, colour = 'Povprečje vseh'), lwd=0.8, lty=3) +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") + 
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
-  ggtitle("Grafi kvantilov racionaliziranih časov glede na TTY po poslovalnicah") + ylab("Čas (v dnevih)") +
+  ggtitle("Grafi kvantilov relativnih časov po poslovalnicah") + ylab("Čas (v dnevih)") +
   scale_fill_manual(values = palette("Dark2")) +
   scale_colour_manual("", breaks = c("Povprečje vseh", "Mediana vseh"),
                       values = c("Povprečje vseh"="dark green", "Mediana vseh"="dark blue"))

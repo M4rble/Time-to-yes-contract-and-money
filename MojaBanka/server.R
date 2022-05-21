@@ -66,20 +66,20 @@ shinyServer(function(input, output) {
             else{
                 st_meseci <- switch(input$prod.lastnost.med.povp,
                                     "brez" = ggplot(mesec.produkti.skupaj, aes(x=mesec, y=vseh, group=1)) + 
-                                        geom_smooth() + geom_point() + ggtitle("Število vseh produktov po mesecih") +
+                                        geom_smooth() + geom_point() + ggtitle("Število vseh oddanih vlog po mesecih") +
                                         ylab("število"),
                                     "mediana" = ggplot(mesec.produkti.skupaj, aes(x=mesec, y=vseh, group=1)) + 
-                                        geom_smooth() + geom_point() + ggtitle("Število vseh produktov po mesecih") +
+                                        geom_smooth() + geom_point() + ggtitle("Število vseh oddanih vlog po mesecih") +
                                         ylab("število")+ geom_line(aes(y=mesec.med, colour = "Mediana"), lwd=1.3) + 
                                         scale_colour_manual("", breaks= "Mediana",
                                                             values = c("Mediana"="green")),
                                     "povprečje" = ggplot(mesec.produkti.skupaj, aes(x=mesec, y=vseh, group=1)) + 
-                                        geom_smooth() + geom_point() + ggtitle("Število vseh produktov po mesecih") +
+                                        geom_smooth() + geom_point() + ggtitle("Število vseh oddanih vlog po mesecih") +
                                         ylab("število") + geom_line(aes(y=mesec.povp, colour="Povprečje"), lwd=1.3) + 
                                         scale_colour_manual("", breaks= "Povprečje",
                                                             values = c("Povprečje"="red")),
                                     "vse" = ggplot(mesec.produkti.skupaj, aes(x=mesec, y=vseh, group=1)) + 
-                                        geom_smooth() + geom_point() + ggtitle("Število vseh produktov po mesecih") +
+                                        geom_smooth() + geom_point() + ggtitle("Število vseh oddanih vlog po mesecih") +
                                         ylab("število") + geom_line(aes(y=mesec.povp, colour="Povprečje"), lwd=1.2) + 
                                         geom_line(aes(y=mesec.med, colour = "Mediana"), lwd=1.2) +
                                         scale_colour_manual("", breaks = c("Povprečje", "Mediana"),
@@ -898,7 +898,7 @@ shinyServer(function(input, output) {
         
             
             znesek.i <- reactive(quote({
-                        if(input$izbira_zneska > 750){max}
+                        if(input$izbira_zneska > 870){max}
                         else if(input$izbira_zneska < 0){min}
                         else{input$izbira_zneska}}), quoted=TRUE)
             regija.i <- reactive(quote({if(input$izbira_regije == "vzhodna"){1}
@@ -947,7 +947,7 @@ shinyServer(function(input, output) {
             output$izracunani.casi.tty <- renderText({
                 
                 validate(need(input$izbira_zneska != "", "Vnesite pozitivno vrednost zneska"))
-                validate(need(input$izbira_zneska < 751 & input$izbira_zneska > 0,  "Vnesite vrednost med 1 in 750"))
+                validate(need(input$izbira_zneska < 871 & input$izbira_zneska > 0,  "Vnesite vrednost med 1 in 870"))
                 
                 
             pred.modela.tty <- reactive(quote({predict(mod.TTY, newdata = data.frame(
@@ -968,7 +968,7 @@ shinyServer(function(input, output) {
             output$izracunani.casi.ttc <- renderText({
                 
                 validate(need(input$izbira_zneska != "", ""))
-                validate(need(input$izbira_zneska < 751 & input$izbira_zneska > 0, ""))
+                validate(need(input$izbira_zneska < 871 & input$izbira_zneska > 0, ""))
                 
             pred.modela.ttc <- reactive(quote({predict(mod.TTC, newdata = data.frame(
                 "znesek" = znesek.i(), "regija" = regija.i(), "poslovalnica" = poslovalnica.i(),
@@ -988,7 +988,7 @@ shinyServer(function(input, output) {
             output$izracunani.casi.ttm <- renderText({
                 
                 validate(need(input$izbira_zneska != "", ""))
-                validate(need(input$izbira_zneska < 751 & input$izbira_zneska > 0, ""))
+                validate(need(input$izbira_zneska < 871 & input$izbira_zneska > 0, ""))
                 
             pred.modela.ttm <- reactive(quote({predict(mod.TTM, newdata = data.frame(
                 "znesek" = znesek.i(), "regija" = regija.i(), "poslovalnica" = poslovalnica.i(),
