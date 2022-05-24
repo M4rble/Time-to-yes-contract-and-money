@@ -5,9 +5,6 @@ source("~/Faks/mag 1 letnik/MzR/Time-to-yes-contract-and-money/vizualizacija/viz
 # Boxploti za times vs produkt
 
 
-a <- min(min(podatki$TTY, min(podatki$TTC), min(podatki$TTM)))
-b <- max(max(podatki$TTY, max(podatki$TTC), max(podatki$TTM)))
-
 graf8.1 <- ggplot(podatki, aes(x= produkt, y=TTY, fill = produkt)) + 
   geom_boxplot(outlier.color = "blue") +
   stat_summary(fun =mean, geom="point", shape=20, size=4, color="green", fill="green") +

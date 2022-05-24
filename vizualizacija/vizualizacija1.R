@@ -2,7 +2,7 @@
 
 source("~/Faks/mag 1 letnik/MzR/Time-to-yes-contract-and-money/uvoz/uvoz.R", encoding="UTF-8")
 
-# prvo po atributih
+# Analiza podatkov po atributih
 
 # PRODUKTI
 # delež v celem letu in po mesecih
