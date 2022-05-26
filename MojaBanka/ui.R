@@ -383,7 +383,7 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                                         label = "Izberite regijo v kateri boste oddali vlogo",
                                                         choices = c("vzhodna", "zahodna")),
                                             selectInput("izbira_poslovalnice",
-                                                        label = "Izberite poslovalnico, v kateri boste oddali vlogo",
+                                                        label = "Izberite poslovalnico v kateri boste oddali vlogo",
                                                         choices = c(1,2,3,4,5,6,7))
                                        ),
                    

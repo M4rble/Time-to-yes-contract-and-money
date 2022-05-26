@@ -46,7 +46,7 @@ shinyServer(function(input, output) {
                                        geom_bar(position = position_dodge(width = 0.9)) + coord_flip() +
                                        ylab("produkt") + xlab("število") +
                                        ggtitle("Število posameznih produktov v celem letu") + 
-                                       theme(axis.text.x=element_text(angle=45, hjust=1)),
+                                       theme(axis.text.x=element_text(angle=30, hjust=1)),
                                    "Število posameznih po mesecih" = ggplot(mesec.produkti, aes(x=mesec, y=stevilo, group=produkt, colour=produkt)) + 
                                        geom_line() + geom_point() + ggtitle("Število posameznih produktov po mesecih") +
                                        ylab("število") + scale_colour_discrete(labels = c("avtomobilski", "hipotekarni",
@@ -112,9 +112,9 @@ shinyServer(function(input, output) {
             tipi <- switch(input$lastnost_tip,
                            "Skupno število" = ggplot(podatki, aes(y=tip, fill = tip)) +
                                geom_bar(position = position_dodge(width = 0.9)) + coord_flip() +
-                               ylab("produkt") + xlab("število") +
+                               ylab("tip") + xlab("število") +
                                ggtitle("Število posameznih tipov v celem letu") + 
-                               theme(axis.text.x=element_text(angle=45, hjust=1)),
+                               theme(axis.text.x=element_text(angle=30, hjust=1)),
                            "Delež v letu" = ggplot(delez.tipov, aes(x="", y=delez, fill =tip)) +
                                geom_col(width=0.7, position = position_dodge(width = 1)) + 
                                geom_label(aes(x="", y = delez + 3, label = delez), 
@@ -126,7 +126,7 @@ shinyServer(function(input, output) {
                            "Delež znotraj produktov" = ggplot(prod.del.tip, aes(x=produkt, y=delez, fill=tip)) + 
                                geom_col(position = position_dodge(width = 0.9)) +
                                ggtitle("Delež posameznih tipov znotraj posameznega produkta") + xlab("produkt") + 
-                               ylab("delež (v %") + theme(axis.text.x=element_text(angle=45, hjust=1))
+                               ylab("delež (v %") + theme(axis.text.x=element_text(angle=30, hjust=1))
             )
             print(tipi)
             
@@ -180,18 +180,16 @@ shinyServer(function(input, output) {
             
             else if(input$lastnost_regija == "Število tipov po mesecih"){
                 
-                reg.produkt <- switch (input$reg.lastnost.tip,
-                                       "vzhodna" = ggplot(vzhodna.prod, aes(x=mesec, y=st_prod, group=produkt, colour=produkt)) + 
-                                           geom_line() + geom_point() + ggtitle("Število posameznih produktov v vzhodni regiji po mesecih") +
-                                           ylab("število") + scale_colour_discrete(labels = c("avtomobilski", "hipotekarni",
-                                                                                              "investicijski", "izobraževalni", "osebni", "startup", "študentski")),
-                                       "zahodna" = ggplot(zahodna.prod, aes(x=mesec, y=st_prod, group=produkt, colour=produkt)) + 
-                                           geom_line() + geom_point() + ggtitle("Število posameznih produktov v zahodni regiji po mesecih") +
-                                           ylab("število") + scale_colour_discrete(labels = c("avtomobilski", "hipotekarni",
-                                                                                              "investicijski", "izobraževalni", "osebni", "startup", "študentski"))
+                reg.tip <- switch (input$reg.lastnost.tip,
+                                       "vzhodna" = ggplot(vzhodna.tip, aes(x=mesec, y=st_tip, group=tip, colour=tip)) + 
+                                           geom_line() + geom_point() + ggtitle("Število posameznih tipov v vzhodni regiji po mesecih") +
+                                           ylab("število"),
+                                       "zahodna" = ggplot(zahodna.tip, aes(x=mesec, y=st_tip, group=tip, colour=tip)) + 
+                                           geom_line() + geom_point() + ggtitle("Število posameznih tipov v zahodni regiji po mesecih") +
+                                           ylab("število")
                 )
                 
-                print(reg.produkt)
+                print(reg.tip)
                 
                 
             }
